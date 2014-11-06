@@ -1,8 +1,10 @@
 NUGET
   remote: https://nuget.org/api/v2
   specs:
+    DotNetZip (1.9.3)
     FAKE (3.8.5)
     FSharp.Compiler.Service (0.0.67)
+    FSharp.Core.Microsoft.Signed (3.1.1.1)
     FSharp.Formatting (2.4.36)
       FSharp.Compiler.Service (0.0.67)
       Microsoft.AspNet.Razor (2.0.30506.0)
@@ -14,11 +16,16 @@ NUGET
     Microsoft.Net.Http (2.2.28)
       Microsoft.Bcl (>= 1.1.9)
       Microsoft.Bcl.Build (>= 1.0.14)
+    Newtonsoft.Json (6.0.6)
     NuGet.CommandLine (2.8.3)
     NUnit (2.6.3)
     NUnit.Runners (2.6.3)
     Octokit (0.5.2)
       Microsoft.Net.Http (>= 0)
+    Paket.Core (0.11.14)
+      DotNetZip (>= 1.9.3)
+      FSharp.Core.Microsoft.Signed (>= 3.1.1.1)
+      Newtonsoft.Json (>= 6.0.6)
     RazorEngine (3.3.0)
       Microsoft.AspNet.Razor (>= 2.0.30506.0)
     SourceLink.Fake (0.4.2)
