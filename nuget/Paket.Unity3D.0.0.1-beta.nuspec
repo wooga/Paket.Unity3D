@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <package xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <metadata xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-    <id>@project@</id>
-    <version>@build.number@</version>
-    <authors>@authors@</authors>
-    <owners>@authors@</owners>
+    <id>Paket.Unity3D</id>
+    <version>0.0.1-beta</version>
+    <authors>devboy</authors>
+    <owners>devboy</owners>
     <licenseUrl>http://github.com/fsprojects/Paket.Unity3D/blob/master/LICENSE</licenseUrl>
     <projectUrl>http://fsprojects.github.com/Paket.Unity3D</projectUrl>
     <!--<iconUrl>https://raw.githubusercontent.com/fsprojects/ProjectScaffold/master/docs/files/img/logo.png</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <summary>@summary@</summary>
-    <description>@description@</description>
-    <releaseNotes>@releaseNotes@</releaseNotes>
+    <summary>Piggy-backs ontop of Paket to add dependencies to Unity3D projects</summary>
+    <description>Piggy-backs ontop of Paket to add dependencies to Unity3D projects</description>
+    <releaseNotes>Installs libraries and content files from nuget-packages, respects Plugin directories
+Initial beta-release</releaseNotes>
     <copyright>Copyright 2013</copyright>
-    <tags>@tags@</tags>
+    <tags>nuget, bundler, F#</tags>
     <dependencies />
   </metadata>
   <files>
