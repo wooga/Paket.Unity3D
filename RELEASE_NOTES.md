@@ -1,4 +1,7 @@
-#### 0.0.3-beta - Unreleased  
+#### 0.0.4 - November 8 2014  
+* Not a prerelease anymore
+
+#### 0.0.3-beta - November 7 2014  
 * Uses ILRepack to merge exe with dlls
 
 #### 0.0.2-beta - November 7 2014  

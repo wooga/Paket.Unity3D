@@ -6,7 +6,7 @@
 // Binaries that have XML documentation (in a corresponding generated XML file)
 let referenceBinaries = [ "Paket.Unity3D.dll" ]
 // Web site location for the generated documentation
-let website = "/Paket.Unity3D"
+let website = "."
 
 let githubLink = "http://github.com/devboy/Paket.Unity3D"
 
@@ -64,7 +64,7 @@ let layoutRoots =
 let copyFiles () =
   CopyRecursive files output true |> Log "Copying file: "
   ensureDirectory (output @@ "content")
-  CopyRecursive (formatting @@ "styles") (output @@ "content") true 
+  CopyRecursive (formatting @@ "styles") (output @@ "content") true
     |> Log "Copying styles and scripts: "
 
 // Build API reference from XML comments
@@ -74,7 +74,7 @@ let buildReference () =
     referenceBinaries
     |> List.map (fun lib-> bin @@ lib)
   MetadataFormat.Generate
-    ( binaries, output @@ "reference", layoutRoots, 
+    ( binaries, output @@ "reference", layoutRoots,
       parameters = ("root", root)::info,
       sourceRepo = githubLink @@ "tree/master",
       sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..",
