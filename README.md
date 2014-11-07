@@ -1,20 +1,9 @@
-# ProjectScaffold
+# Paket.Unity3D
 
-This project can be used to scaffold a prototypical .NET solution including file system layout and tooling. This includes a build process that: 
+Use Paket and NuGet dependencies in Unity3D projects
 
-* updates all AssemblyInfo files
-* compiles the application and runs all test projects
-* generates [SourceLinks](https://github.com/ctaggart/SourceLink)
-* generates API docs based on XML document tags
-* generates [documentation based on Markdown files](http://fsprojects.github.io/ProjectScaffold/writing-docs.html)
-* generates [NuGet](http://www.nuget.org) packages
-* and allows a simple [one step release process](http://fsprojects.github.io/ProjectScaffold/release-process.html).
+* place a `paket.unity3d.references` file next to your Unity3D projects `Assets` directory
+* run paket as you would for .Net projects to gather the dependencies in your paket.dependencies file
+* run paket.unity3d.exe from the root of your project to install dependencies into your Unity3D project(s)
 
-In order to start the scaffolding process run 
-
-    $ build.cmd // on windows    
-    $ build.sh  // on mono
-    
-Read the [Getting started tutorial](http://fsprojects.github.io/ProjectScaffold/index.html#Getting-started) to learn more.
-
-Documentation: http://fsprojects.github.io/ProjectScaffold
+Documentation: http://devboy.github.io/Paket.Unity3D

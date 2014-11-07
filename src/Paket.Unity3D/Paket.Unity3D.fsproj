@@ -8,7 +8,7 @@
     <ProjectGuid>7e90d6ce-a10b-4858-a5bc-41df7250cbca</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Paket.Unity3D</RootNamespace>
-    <AssemblyName>Paket.Unity3D</AssemblyName>
+    <AssemblyName>paket.unity3d</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFSharpCoreVersion>4.3.0.0</TargetFSharpCoreVersion>
     <Name>Paket.Unity3D</Name>
@@ -41,6 +41,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Constants.fs" />

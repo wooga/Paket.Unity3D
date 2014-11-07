@@ -36,13 +36,13 @@ let summary = "Piggy-backs ontop of Paket to add dependencies to Unity3D project
 
 // Longer description of the project
 // (used as a description for NuGet package; line breaks are automatically cleaned up)
-let description = "Project has no description; update build.fsx"
+let description = "Piggy-backs ontop of Paket to add dependencies to Unity3D projects"
 
 // List of author names (for NuGet package)
 let authors = [ "devboy" ]
 
 // Tags for your project (for NuGet package)
-let tags = ""
+let tags = "nuget, bundler, F#"
 
 // File system information 
 let solutionFile  = "Paket.Unity3D.sln"

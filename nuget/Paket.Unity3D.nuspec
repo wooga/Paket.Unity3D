@@ -5,9 +5,9 @@
     <version>@build.number@</version>
     <authors>@authors@</authors>
     <owners>@authors@</owners>
-    <licenseUrl>http://github.com/fsprojects/Paket.Unity3D/blob/master/LICENSE.txt</licenseUrl>
+    <licenseUrl>http://github.com/fsprojects/Paket.Unity3D/blob/master/LICENSE</licenseUrl>
     <projectUrl>http://fsprojects.github.com/Paket.Unity3D</projectUrl>
-    <iconUrl>https://raw.githubusercontent.com/fsprojects/ProjectScaffold/master/docs/files/img/logo.png</iconUrl>
+    <!--<iconUrl>https://raw.githubusercontent.com/fsprojects/ProjectScaffold/master/docs/files/img/logo.png</iconUrl>-->
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <summary>@summary@</summary>
     <description>@description@</description>
@@ -17,7 +17,6 @@
     <dependencies />
   </metadata>
   <files>
-    <file src="..\bin\Paket.Unity3D.dll" target="lib/net40" />
-    <file src="..\bin\Paket.Unity3D.pdb" target="lib/net40" />
+    <file src="..\bin\paket.unity3d.exe" target="tools" />
   </files>
 </package>

@@ -14,8 +14,11 @@ let private findPackagesWithContent (usedPackages:Dictionary<_,_>) =
 let private copyContentFiles (project : Unity3DReferencesFile, package, dir) = 
     
     let root:DirectoryInfo = dir
-    let androidSourceDir = DirectoryInfo(Path.Combine(root.FullName, Constants.UnityAndroidPluginPath))
-    let iOSSourceDir = DirectoryInfo(Path.Combine(root.FullName, Constants.UnityIOSPluginPath))
+    
+    let isPluginDir (dir:DirectoryInfo) = 
+        Constants.PluginDirs
+        |> List.map (fun pd -> Path.Combine(root.FullName, pd))
+        |> List.exists ((=) dir.FullName)                 
 
     let rules : list<(FileInfo -> bool)> = [
             fun f -> f.Name = "_._"
@@ -29,10 +32,7 @@ let private copyContentFiles (project : Unity3DReferencesFile, package, dir) =
 
     let rec copyDirContents (fromDir : DirectoryInfo, toDir : Lazy<DirectoryInfo>) =
         fromDir.GetDirectories()
-        |> Array.filter (fun d -> verbosefn "d: %A" d.FullName
-                                  verbosefn "a: %A" androidSourceDir.FullName
-                                  verbosefn "i: %A" iOSSourceDir.FullName 
-                                  not(d.FullName = androidSourceDir.FullName) && not(d.FullName = iOSSourceDir.FullName )) 
+        |> Array.filter (fun d -> not( isPluginDir d )) 
         |> Array.toList
         |> List.collect (fun subDir -> copyDirContents(subDir, lazy toDir.Force().CreateSubdirectory(subDir.Name)))
         |> List.append
@@ -42,21 +42,20 @@ let private copyContentFiles (project : Unity3DReferencesFile, package, dir) =
                 |> List.map (fun file -> file.CopyTo(Path.Combine(toDir.Force().FullName, file.Name), true)))
 
     let targetDir = DirectoryInfo(Path.Combine(project.UnityAssetsDir, Constants.Unity3DCopyFolderName, package))
-    let androidTargetDir = DirectoryInfo(Path.Combine(project.UnityAssetsDir, Constants.UnityAndroidPluginPath, Constants.Unity3DCopyFolderName, package))
-    let iOSTargetDir = DirectoryInfo(Path.Combine(project.UnityAssetsDir, Constants.UnityIOSPluginPath, Constants.Unity3DCopyFolderName, package)) 
 
+    // Copy content files
     copyDirContents (root, lazy (targetDir)) |> ignore
-    if androidSourceDir.Exists then
-        Utils.CleanDir androidTargetDir.FullName 
-        copyDirContents(androidSourceDir, lazy(androidTargetDir)) |> ignore
-    if iOSSourceDir.Exists then
-        Utils.CleanDir iOSTargetDir.FullName 
-        copyDirContents(iOSSourceDir, lazy(iOSTargetDir)) |> ignore
+    // Copy plugin content files
+    Constants.PluginDirs
+    |> List.map (fun pd -> pd, DirectoryInfo(Path.Combine(root.FullName, pd)))
+    |> List.filter (fun (plugin, source) -> source.Exists )
+    |> List.map (fun (plugin,source) -> source, DirectoryInfo(Path.Combine(project.UnityAssetsDir, plugin, Constants.Unity3DCopyFolderName, package)) )
+    |> List.iter (fun (source, target) -> 
+        Utils.CleanDir target.FullName
+        copyDirContents(source, lazy(target)) |> ignore )    
 
 let Install(sources,force, hard, lockFile:LockFile) =
     let extractedPackages = Paket.InstallProcess.createModel(sources,force, lockFile)
-
-//    verbosefn "extractedPackages: %A" extractedPackages
 
     let model =
         extractedPackages
@@ -65,9 +64,7 @@ let Install(sources,force, hard, lockFile:LockFile) =
 
     let applicableProjects =
         Paket.Unity3D.Unity3DReferencesFile.FindAllReferencesFiles(".")
-   
-    verbosefn "applicableProjects: %A" applicableProjects
-        
+           
     for unityProject in applicableProjects do    
         verbosefn "Installing to %s" unityProject.UnityAssetsDir
 
@@ -86,8 +83,5 @@ let Install(sources,force, hard, lockFile:LockFile) =
         usedPackages
         |> findPackagesWithContent
         |> Seq.iter (fun (package,dir) -> copyContentFiles(unityProject,package,dir) )
-
-        
-        verbosefn "packagesWithContent: %A" (usedPackages |> findPackagesWithContent)
            
     ()
