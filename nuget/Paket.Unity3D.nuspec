@@ -18,5 +18,6 @@
   </metadata>
   <files>
     <file src="bin/paket.unity3d.exe" target="tools" />
+    <file src="bin/*.dll" target="tools" />
   </files>
 </package>
