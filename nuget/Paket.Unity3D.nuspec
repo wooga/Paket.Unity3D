@@ -17,7 +17,6 @@
     <dependencies />
   </metadata>
   <files>
-    <file src="bin/paket.unity3d.exe" target="tools" />
-    <file src="bin/*.dll" target="tools" />
+    <file src="bin/merge/paket.unity3d.exe" target="tools" />
   </files>
 </package>
