@@ -2,7 +2,8 @@
 <html lang="en">
   <head>
     <meta charset="utf-8"/>
-    <title>tutorial</title>
+    <title>Quick start guide
+</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <meta name="description" content="Piggy-backs ontop of Paket to add dependencies to Unity3D projects"/>
     <meta name="author" content="devboy"/>
@@ -32,7 +33,61 @@
       <div class="row">
         <div class="span9" id="main">
           
-<p>TODO: Create sample tutorial</p>
+<h1><a name="Quick-start-guide" class="anchor" href="#Quick-start-guide">Quick start guide</a></h1>
+
+<p>Go over to <a href="http://fsprojects.github.io/Paket">Paket</a> and install it into your project.</p>
+
+<h2><a name="paket-dependencies" class="anchor" href="#paket-dependencies">paket.dependencies</a></h2>
+
+<p>Proceed by adjusting your <code>paket.dependencies</code> file to include <code>Paket.Unity3D</code>. We use <code>LibNoise</code> as an example dependency to be installed in the Unity3D project</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+<span class="l">3: </span>
+<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">source</span> <span class="i">https</span><span class="o">:</span><span class="c">//nuget.org/api/v2</span>
+
+<span class="i">nuget</span> <span class="i">LibNoise</span>
+<span class="i">nuget</span> <span class="i">Paket</span><span class="o">.</span><span class="i">Unity3D</span></pre>
+</td>
+</tr>
+</table>
+
+<p>For more info on <code>paket.dependencies</code> check the <a href="http://fsprojects.github.io/Paket/dependencies-file.html">Paket documentation</a></p>
+
+<h2><a name="paket-unity3d-references" class="anchor" href="#paket-unity3d-references">paket.unity3d.references</a></h2>
+
+<p>Then add a <code>paket.unity3d.references</code> next to the <code>Assets</code> directory of the Unity3D project which contains the <code>LibNoise</code> reference.</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">LibNoise</span></pre>
+</td>
+</tr>
+</table>
+
+<h2><a name="Update-and-install" class="anchor" href="#Update-and-install">Update and install</a></h2>
+
+<p>Update your dependencies with <a href="http://fsprojects.github.io/Paket">Paket</a></p>
+
+<table class="pre"><tr><td><pre lang="batchfile">$ [mono] .paket/paket.exe update</pre></td></tr></table>
+
+<p>Install the references into the Unity3D project</p>
+
+<table class="pre"><tr><td><pre lang="batchfile">$ [mono] packages/Paket.Unity3D/tools/paket.unity3d.exe</pre></td></tr></table>
+
+<p>LibNoise is now added to the Assets directory and the directory should look like this</p>
+
+<p><img src="img/quick-start-folders.png" alt="alt text" title="Directory structure" /></p>
+
+<p>Now LibNoise can be accessed in by other code in the Unity3D project.</p>
 
 
         </div>
