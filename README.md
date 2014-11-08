@@ -21,7 +21,6 @@ Furthermore Paket.Unity3D works on the command-line and can be integrate into th
 ## Troubleshooting and support
 
  - Found a bug or missing a feature? Feed the [issue tracker][4]
- - Announcements and related miscellanea through Twitter ([@PaketManager][5])
 
 ## Build status
 

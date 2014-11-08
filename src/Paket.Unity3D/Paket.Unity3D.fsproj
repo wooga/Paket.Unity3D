@@ -22,7 +22,7 @@
     <OutputPath>..\..\bin</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
-    <DocumentationFile>..\..\bin\Paket.Unity3D.xml</DocumentationFile>
+    <DocumentationFile>..\..\bin\paket.unity3d.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>

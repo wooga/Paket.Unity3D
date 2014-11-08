@@ -1,8 +1,10 @@
-﻿namespace Paket.Unity3D
+﻿/// Utilities to install Paket dependencies into Unity3D projects 
+namespace Paket.Unity3D
 
 open Paket.Utils
 open System.IO
 
+/// Represents paket.unity3d.references file
 type Unity3DReferencesFile = 
     {
         ReferencesFile:Paket.ReferencesFile

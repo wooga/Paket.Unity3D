@@ -1,4 +1,5 @@
-﻿module Paket.Unity3D.Program
+﻿/// The Executable
+module Paket.Unity3D.Program
 
 open Paket
 Paket.Logging.verbose <- true

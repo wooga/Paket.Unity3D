@@ -4,7 +4,7 @@
 // --------------------------------------------------------------------------------------
 
 // Binaries that have XML documentation (in a corresponding generated XML file)
-let referenceBinaries = [ "Paket.Unity3D.dll" ]
+let referenceBinaries = [ "paket.unity3d.exe" ]
 // Web site location for the generated documentation
 let website = "."
 
@@ -38,14 +38,6 @@ open Fake.FileHelper
 open FSharp.Literate
 open FSharp.MetadataFormat
 
-// When called from 'build.fsx', use the public project URL as <root>
-// otherwise, use the current 'output' directory.
-#if RELEASE
-let root = website
-#else
-let root = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
-#endif
-
 // Paths with template/source/output locations
 let bin        = __SOURCE_DIRECTORY__ @@ "../../bin"
 let content    = __SOURCE_DIRECTORY__ @@ "../content"
@@ -67,18 +59,30 @@ let copyFiles () =
   CopyRecursive (formatting @@ "styles") (output @@ "content") true
     |> Log "Copying styles and scripts: "
 
+// When called from 'build.fsx', use the public project URL as <root>
+// otherwise, use the current 'output' directory.
+#if RELEASE
+let refRoot = website + "/.."
+#else
+let refRoot = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
+#endif
+
 // Build API reference from XML comments
 let buildReference () =
   CleanDir (output @@ "reference")
-  let binaries =
-    referenceBinaries
-    |> List.map (fun lib-> bin @@ lib)
-  MetadataFormat.Generate
-    ( binaries, output @@ "reference", layoutRoots,
-      parameters = ("root", root)::info,
-      sourceRepo = githubLink @@ "tree/master",
-      sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..",
-      publicOnly = true, libDirs = [bin] )
+  for lib in referenceBinaries do
+    MetadataFormat.Generate
+      ( bin @@ lib, output @@ "reference", layoutRoots,
+        parameters = ("root", refRoot)::info,
+        sourceRepo = githubLink @@ "tree/master",
+        sourceFolder = __SOURCE_DIRECTORY__ @@ ".." @@ "..",
+        libDirs = [ bin ] )
+
+#if RELEASE
+let docRoot = website
+#else
+let docRoot = "file://" + (__SOURCE_DIRECTORY__ @@ "../output")
+#endif
 
 // Build documentation from `fsx` and `md` files in `docs/content`
 let buildDocumentation () =
@@ -86,8 +90,9 @@ let buildDocumentation () =
   for dir in Seq.append [content] subdirs do
     let sub = if dir.Length > content.Length then dir.Substring(content.Length + 1) else "."
     Literate.ProcessDirectory
-      ( dir, docTemplate, output @@ sub, replacements = ("root", root)::info,
-        layoutRoots = layoutRoots )
+      ( dir, docTemplate, output @@ sub, replacements = ("root", docRoot)::info,
+        layoutRoots = layoutRoots,
+        generateAnchors = true )
 
 // Generate
 copyFiles()

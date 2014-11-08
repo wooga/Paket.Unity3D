@@ -1,4 +1,5 @@
-﻿module Paket.Unity3D.InstallProcess
+﻿/// Handles the installation of dependencies into Unity3D projects
+module Paket.Unity3D.InstallProcess
 
 open Paket
 open Paket.Logging
@@ -54,6 +55,7 @@ let private copyContentFiles (project : Unity3DReferencesFile, package, dir) =
         Utils.CleanDir target.FullName
         copyDirContents(source, lazy(target)) |> ignore )    
 
+/// Installs Paket dependencies into the Unity3D Assets directory
 let Install(sources,force, hard, lockFile:LockFile) =
     let extractedPackages = Paket.InstallProcess.createModel(sources,force, lockFile)
 

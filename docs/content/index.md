@@ -3,7 +3,7 @@
 An extension for the [Paket][paket] dependency manager that enables the integration of NuGet dependencies into [Unity3D][unity] projects.
 
   [paket]: http://fsprojects.github.io/Paket/
-  [nuget]: https://www.unity3d.com/
+  [unity]: https://www.unity3d.com/
 
 ## How to get Paket.Unity3D
 
@@ -22,7 +22,7 @@ Place the `paket.unity3d.exe` next to your `paket.exe`
 
 You can place `paket.unity3d.references` alongside your Unity3D `Assets` directory to have Paket.Unity3D automatically sync files for the packages noted in that file whenever `paket.unity3d.exe` is executed.
 
-TODO: Create sample tutorial
+Check out the [Tutorial][tutorial] to get started
 
 Contributing and copyright
 --------------------------
@@ -34,8 +34,9 @@ Please see the [Quick contributing guide in the README][readme] for contribution
 The library is available under MIT license, which allows modification and redistribution for both commercial and non-commercial purposes.
 For more information see the [License file][license].
 
-  [content]: https://github.com/fsprojects/Paket.Unity3D/tree/master/docs/content
+  [content]: https://github.com/devboy/Paket.Unity3D/tree/master/docs/content
   [gh]: https://github.com/devboy/Paket.Unity3D
   [issues]: https://github.com/devboy/Paket.Unity3D/issues
   [readme]: https://github.com/devboy/Paket.Unity3D/blob/master/README.md
   [license]: http://devboy.github.io/Paket.Unity3D/license.html
+  [tutorial]: http://devboy.github.io/Paket.Unity3D/tutorial.html
