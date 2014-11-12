@@ -1,3 +1,6 @@
+#### 0.0.5 - November 12 2014
+* Cleans `Paket.Unity3D` directories in Unity3D projects when updating dependencies
+
 #### 0.0.4 - November 8 2014  
 * Not a prerelease anymore
 

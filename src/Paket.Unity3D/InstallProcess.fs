@@ -6,6 +6,12 @@ open Paket.Logging
 open System.IO
 open System.Collections.Generic
 
+let private cleanTargetDirectories (unityProject:Unity3DReferencesFile) =
+    Constants.PluginDirs
+    |> List.map (fun pd -> Path.Combine(unityProject.UnityAssetsDir, pd, Constants.Unity3DCopyFolderName))
+    |> List.append [Path.Combine(unityProject.UnityAssetsDir, Constants.Unity3DCopyFolderName)]
+    |> List.iter (fun dir -> Utils.CleanDir dir)
+
 let private findPackagesWithContent (usedPackages:Dictionary<_,_>) = 
     usedPackages
     |> Seq.map (fun kv -> kv.Key, DirectoryInfo(Path.Combine("packages", kv.Key, "content")))
@@ -69,6 +75,8 @@ let Install(sources,force, hard, lockFile:LockFile) =
            
     for unityProject in applicableProjects do    
         verbosefn "Installing to %s" unityProject.UnityAssetsDir
+
+        cleanTargetDirectories unityProject
 
         let usedPackages = lockFile.GetPackageHull(unityProject.ReferencesFile)
         
