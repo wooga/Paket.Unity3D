@@ -7,6 +7,6 @@ nuget Nuget.CommandLine
 nuget FAKE
 nuget Octokit
 nuget SourceLink.Fake
-nuget Paket.Core
+nuget Paket.Core == 0.12.2
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
