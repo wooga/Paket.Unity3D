@@ -1,3 +1,8 @@
+#### 0.0.6 - January 14 2015
+* Updates for Paket.Core 0.22.9
+* Does not modify paths of "Plugins" directories
+* Removed DLL embedding (postponed until Unity5 where you can link DLLs per platform) 
+
 #### 0.0.5 - November 12 2014
 * Cleans `Paket.Unity3D` directories in Unity3D projects when updating dependencies
 

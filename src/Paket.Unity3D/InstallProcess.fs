@@ -1,31 +1,27 @@
-﻿/// Handles the installation of dependencies into Unity3D projects
-module Paket.Unity3D.InstallProcess
+﻿module Paket.Unity3D.InstallProcess
 
 open Paket
+open Paket.Rop
+open Paket.Domain
 open Paket.Logging
+open Paket.BindingRedirects
+open Paket.ModuleResolver
+open Paket.PackageResolver
 open System.IO
 open System.Collections.Generic
+open FSharp.Polyfill
+open System.Reflection
+open System.Diagnostics
 
-let private cleanTargetDirectories (unityProject:Unity3DReferencesFile) =
-    Constants.PluginDirs
-    |> List.map (fun pd -> Path.Combine(unityProject.UnityAssetsDir, pd, Constants.Unity3DCopyFolderName))
-    |> List.append [Path.Combine(unityProject.UnityAssetsDir, Constants.Unity3DCopyFolderName)]
-    |> List.iter (fun dir -> Utils.CleanDir dir)
-
-let private findPackagesWithContent (usedPackages:Dictionary<_,_>) = 
+let private findPackagesWithContent (root,usedPackages:HashSet<_>) = 
     usedPackages
-    |> Seq.map (fun kv -> kv.Key, DirectoryInfo(Path.Combine("packages", kv.Key, "content")))
-    |> Seq.filter (fun (package,packageDir) -> packageDir.Exists)
+    |> Seq.map (fun (PackageName x) -> x,DirectoryInfo(Path.Combine(root, Constants.PackagesFolderName, x)))
+    |> Seq.choose (fun (name,packageDir) -> if packageDir.GetDirectories("content").Length>0
+                                            then Some(name,(DirectoryInfo(Path.Combine(packageDir.FullName,"content"))))
+                                            else None)
     |> Seq.toList
 
-let private copyContentFiles (project : Unity3DReferencesFile, package, dir) = 
-    
-    let root:DirectoryInfo = dir
-    
-    let isPluginDir (dir:DirectoryInfo) = 
-        Constants.PluginDirs
-        |> List.map (fun pd -> Path.Combine(root.FullName, pd))
-        |> List.exists ((=) dir.FullName)                 
+let private copyContentFiles (project : Paket.Unity3D.Project, packagesWithContent:(string*DirectoryInfo) list) = 
 
     let rules : list<(FileInfo -> bool)> = [
             fun f -> f.Name = "_._"
@@ -34,64 +30,93 @@ let private copyContentFiles (project : Unity3DReferencesFile, package, dir) =
             fun f -> f.Name.EndsWith(".tt")
             fun f -> f.Name.EndsWith(".ttinclude")
         ]
-    
+
     let onBlackList (fi : FileInfo) = rules |> List.exists (fun rule -> rule(fi))
 
-    let rec copyDirContents (fromDir : DirectoryInfo, toDir : Lazy<DirectoryInfo>) =
-        fromDir.GetDirectories()
-        |> Array.filter (fun d -> not( isPluginDir d )) 
+    let copyFiles (fromDir:DirectoryInfo) (toDir:Lazy<DirectoryInfo>) :FileSystemInfo list =
+        fromDir.GetFiles() 
         |> Array.toList
-        |> List.collect (fun subDir -> copyDirContents(subDir, lazy toDir.Force().CreateSubdirectory(subDir.Name)))
-        |> List.append
-            (fromDir.GetFiles() 
-                |> Array.toList
-                |> List.filter (onBlackList >> not)
-                |> List.map (fun file -> file.CopyTo(Path.Combine(toDir.Force().FullName, file.Name), true)))
+        |> List.filter (onBlackList >> not)
+        |> List.map (fun file -> file.CopyTo(Path.Combine(toDir.Force().FullName, file.Name), true) :> FileSystemInfo)
 
-    let targetDir = DirectoryInfo(Path.Combine(project.UnityAssetsDir, Constants.Unity3DCopyFolderName, package))
+    let rec copyDirContents (package:string, fromDir : DirectoryInfo, toDir : Lazy<DirectoryInfo>) :FileSystemInfo list =
+        fromDir.GetDirectories() |> Array.toList
+        |> List.collect (fun subDir -> copyDirContents(package, subDir, lazy toDir.Force().CreateSubdirectory(subDir.Name)))
+        |> List.append (copyFiles fromDir toDir)
+            
+    let copyContentDirContents (package:string, fromDir : DirectoryInfo) =
+        tracefn "- %s" package
+        let lazyDir dir = lazy(
+            let info = DirectoryInfo(dir) in do info.Create()
+            info
+            )
+        let targetDir = lazyDir(Path.Combine(project.PaketDirectory.FullName, package))
+        fromDir.GetDirectories() |> Array.toList
+        |> List.map (fun subDir -> (subDir,match subDir.Name with "Plugins" -> lazy(project.Assets) | _ -> targetDir))
+        |> List.collect (fun (subDir,target) -> copyDirContents(package, subDir, lazy target.Force().CreateSubdirectory(subDir.Name)))
+        |> List.append (copyFiles fromDir targetDir)
 
-    // Copy content files
-    copyDirContents (root, lazy (targetDir)) |> ignore
-    // Copy plugin content files
-    Constants.PluginDirs
-    |> List.map (fun pd -> pd, DirectoryInfo(Path.Combine(root.FullName, pd)))
-    |> List.filter (fun (plugin, source) -> source.Exists )
-    |> List.map (fun (plugin,source) -> source, DirectoryInfo(Path.Combine(project.UnityAssetsDir, plugin, Constants.Unity3DCopyFolderName, package)) )
-    |> List.iter (fun (source, target) -> 
-        Utils.CleanDir target.FullName
-        copyDirContents(source, lazy(target)) |> ignore )    
+    packagesWithContent
+    |> List.collect (fun (name,packageDir) -> copyContentDirContents (name, packageDir))
 
-/// Installs Paket dependencies into the Unity3D Assets directory
-let Install(sources,force, hard, lockFile:LockFile) =
-    let extractedPackages = Paket.InstallProcess.createModel(sources,force, lockFile)
+let private removeCopiedFiles (project:Paket.Unity3D.Project) =
+    if project.PaketDirectory.Exists then project.PaketDirectory.Delete(true)
+
+let CreateInstallModel(root, sources, force, package) = 
+    async { 
+        let! (package, files) = RestoreProcess.ExtractPackage(root, sources, force, package)
+        let (PackageName name) = package.Name
+        let nuspec = FileInfo(sprintf "%s/packages/%s/%s.nuspec" root name name)
+        let nuspec = Nuspec.Load nuspec.FullName
+        let files = files |> Seq.map (fun fi -> fi.FullName)
+        return package, InstallModel.CreateFromLibs(package.Name, package.Version, package.FrameworkRestrictions, files, nuspec)
+    }
+
+/// Restores the given packages from the lock file.
+let createModel(root, sources,force, lockFile:LockFile) = 
+    let sourceFileDownloads = RemoteDownload.DownloadSourceFiles(root, lockFile.SourceFiles)
+        
+    let packageDownloads = 
+        lockFile.ResolvedPackages
+        |> Seq.map (fun kv -> CreateInstallModel(root,sources,force,kv.Value))
+        |> Async.Parallel
+
+    let _,extractedPackages =
+        Async.Parallel(sourceFileDownloads,packageDownloads)
+        |> Async.RunSynchronously
+
+    extractedPackages
+
+let findAllReferencesFiles root =
+    root |> Paket.Unity3D.ReferencesFile.FindAllReferencesFiles |> collect
+
+/// Installs the given all packages from the lock file.
+let InstallIntoProjects(sources,force, hard, withBindingRedirects, lockFile:LockFile, projects:Paket.Unity3D.Project list) =
+    let root = Path.GetDirectoryName lockFile.FileName
+    let extractedPackages = createModel(root,sources,force, lockFile)
 
     let model =
         extractedPackages
-        |> Array.map (fun (p,m) -> p.Name.ToLower(),m)
+        |> Array.map (fun (p,m) -> NormalizedPackageName p.Name,m)
         |> Map.ofArray
 
-    let applicableProjects =
-        Paket.Unity3D.Unity3DReferencesFile.FindAllReferencesFiles(".")
-           
-    for unityProject in applicableProjects do    
-        verbosefn "Installing to %s" unityProject.UnityAssetsDir
+    for project in projects do    
+        tracefn "Installing to %s" project.Name
 
-        cleanTargetDirectories unityProject
+        let usedPackages = lockFile.GetPackageHull(project.References)
 
-        let usedPackages = lockFile.GetPackageHull(unityProject.ReferencesFile)
-        
-        usedPackages
-        |> Seq.map (fun kv -> 
-                            let installModel = model.[kv.Key.ToLower()]
-                            let dlls = installModel.GetFiles(DotNetFramework(FrameworkVersion.V3_5))
-                                       |> Seq.map (fun f -> FileInfo(f)) 
-                            let path =Path.Combine(unityProject.UnityAssetsDir, Constants.Unity3DCopyFolderName, installModel.PackageName)
-                            path, dlls )
-        |> Seq.iter (fun (path,dlls) -> Utils.CleanDir path
-                                        for dll in dlls do dll.CopyTo(Path.Combine(path, dll.Name)) |> ignore )
+        let usedPackageNames =
+            usedPackages
+            |> Seq.map NormalizedPackageName
+            |> Set.ofSeq
 
-        usedPackages
-        |> findPackagesWithContent
-        |> Seq.iter (fun (package,dir) -> copyContentFiles(unityProject,package,dir) )
-           
-    ()
+        removeCopiedFiles project
+
+        copyContentFiles(project, findPackagesWithContent(root,usedPackages))
+        |> ignore
+
+/// Installs the given all packages from the lock file.
+let Install(sources,force, hard, withBindingRedirects, lockFile:LockFile) = 
+    let root = FileInfo(lockFile.FileName).Directory.FullName 
+    let projects = findAllReferencesFiles root |> returnOrFail
+    InstallIntoProjects(sources,force,hard,withBindingRedirects,lockFile,projects)
