@@ -173,8 +173,8 @@ Target "MergeExe" (fun _ ->
 // Build a NuGet package
 
 Target "NuGet" (fun _ ->
-    NuGet (fun p ->
-        { p with
+    let nugetParams = {
+        NuGetHelper.NuGetDefaults() with
             Authors = authors
             Project = project
             Summary = summary
@@ -185,9 +185,29 @@ Target "NuGet" (fun _ ->
             Tags = tags
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
+#if MONO
+            Publish = false
+#else
             Publish = hasBuildParam "nugetkey"
-            Dependencies = [] })
-        ("nuget/" + project + ".nuspec")
+#endif
+            Dependencies = [] }
+
+    NuGet (fun p -> nugetParams) ("nuget/" + project + ".nuspec")
+
+#if MONO
+    if hasBuildParam "nugetkey" then
+      let source = 
+        if isNullOrEmpty nugetParams.PublishUrl then ""
+        else sprintf "-s %s" nugetParams.PublishUrl
+      let args = sprintf "push \"%s\" %s %s" (nugetParams.OutputPath @@ sprintf "%s.%s.nupkg" nugetParams.Project nugetParams.Version) nugetParams.AccessKey source
+      let result =
+              ExecProcess (fun info ->
+                  info.FileName <- nugetParams.ToolPath
+                  info.WorkingDirectory <- FullName nugetParams.WorkingDir
+                  info.Arguments <- args) nugetParams.TimeOut
+      //enableProcessTracing <- tracing
+      if result <> 0 then failwithf "Error during NuGet push. %s %s" nugetParams.ToolPath args
+#endif
 )
 
 // --------------------------------------------------------------------------------------
