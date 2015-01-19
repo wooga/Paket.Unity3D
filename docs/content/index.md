@@ -2,8 +2,8 @@
 
 An extension for the [Paket][paket] dependency manager that enables the integration of NuGet dependencies into [Unity3D][unity] projects.
 
-  [paket]: http://fsprojects.github.io/Paket/
-  [unity]: https://www.unity3d.com/
+[paket]: http://fsprojects.github.io/Paket/
+[unity]: https://www.unity3d.com/
 
 ## How to get Paket.Unity3D
 
@@ -14,18 +14,21 @@ Paket.Unity3D is available as:
 
 [![NuGet Status](http://img.shields.io/nuget/v/Paket.Unity3D.svg?style=flat)](https://www.nuget.org/packages/Paket.Unity3D/)
 
+## Prerequisites
+
+### Windows
+
+You’ll need [.NET Framework 4.0](http://www.microsoft.com/en-us/download/details.aspx?id=17851)
+
+### *Nix
+
+You’ll need [Mono MRE 3.10](http://www.mono-project.com/download/)
+
 ## Getting Started
 
-Please have a look at the documentation of [Paket][paket] on how to setup and declare project dependencies.
+Check out the [Guide][tutorial] to get started
 
-Place the `paket.unity3d.exe` next to your `paket.exe`
-
-You can place `paket.unity3d.references` alongside your Unity3D `Assets` directory to have Paket.Unity3D automatically sync files for the packages noted in that file whenever `paket.unity3d.exe` is executed.
-
-Check out the [Tutorial][tutorial] to get started
-
-Contributing and copyright
---------------------------
+## Contributing and copyright
 
 The project is hosted on [GitHub][gh] where you can [report issues][issues], fork the project and submit pull requests.
 
@@ -34,9 +37,11 @@ Please see the [Quick contributing guide in the README][readme] for contribution
 The library is available under MIT license, which allows modification and redistribution for both commercial and non-commercial purposes.
 For more information see the [License file][license].
 
-  [content]: https://github.com/devboy/Paket.Unity3D/tree/master/docs/content
-  [gh]: https://github.com/devboy/Paket.Unity3D
-  [issues]: https://github.com/devboy/Paket.Unity3D/issues
-  [readme]: https://github.com/devboy/Paket.Unity3D/blob/master/README.md
-  [license]: http://devboy.github.io/Paket.Unity3D/license.html
-  [tutorial]: http://devboy.github.io/Paket.Unity3D/tutorial.html
+[content]: https://github.com/devboy/Paket.Unity3D/tree/master/docs/content
+[gh]: https://github.com/devboy/Paket.Unity3D
+[issues]: https://github.com/devboy/Paket.Unity3D/issues
+[readme]: https://github.com/devboy/Paket.Unity3D/blob/master/README.md
+[license]: http://devboy.github.io/Paket.Unity3D/license.html
+[tutorial]: ./tutorial.html
+[paket.dependencies]: http://fsprojects.github.io/Paket/dependencies-file.html
+[paket.references]: http://fsprojects.github.io/Paket/references-files.html
