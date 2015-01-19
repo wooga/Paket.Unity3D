@@ -35,47 +35,92 @@
           
 <h1><a name="Quick-start-guide" class="anchor" href="#Quick-start-guide">Quick start guide</a></h1>
 
-<p>Go over to <a href="http://fsprojects.github.io/Paket">Paket</a> and install it into your project.</p>
+<p>This guide will focus on Paket.Unity3D and you will need a <code>.paket</code> directory containing a recent version of <a href="https://github.com/fsprojects/Paket/releases/latest">paket.exe</a> at the root of your project directory structure.
+Please also have a look at the documentation of <a href="http://fsprojects.github.io/Paket/">Paket</a>.</p>
 
 <h2><a name="paket-dependencies" class="anchor" href="#paket-dependencies">paket.dependencies</a></h2>
 
-<p>Proceed by adjusting your <code>paket.dependencies</code> file to include <code>Paket.Unity3D</code>. We use <code>LibNoise</code> as an example dependency to be installed in the Unity3D project</p>
+<p>If no <code>paket.dependencies</code> file is present in the root of your project you can create one as follows:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 <span class="l">2: </span>
-<span class="l">3: </span>
-<span class="l">4: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span class="i">lang</span><span class="o">=</span><span class="i">batchfile</span>]
+[<span class="i">mono</span>] <span class="o">.</span><span class="i">paket</span><span class="o">/</span><span class="i">paket</span><span class="o">.</span><span class="i">exe</span> <span class="i">init</span></pre>
+</td>
+</tr>
+</table>
+
+<p>First you need to add Paket.Unity3D as a dependency. So ensure that the following <code>source</code> and <code>nuget</code> dependency are present in <code>paket.dependencies</code>:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
 <span class="i">source</span> <span class="i">https</span><span class="o">:</span><span class="c">//nuget.org/api/v2</span>
-
-<span class="i">nuget</span> <span class="i">LibNoise</span>
 <span class="i">nuget</span> <span class="i">Paket</span><span class="o">.</span><span class="i">Unity3D</span></pre>
 </td>
 </tr>
 </table>
 
+<p>Proceed by installing Paket.Unity3D:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+<span class="l">2: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+[<span class="i">lang</span><span class="o">=</span><span class="i">batchfile</span>]
+[<span class="i">mono</span>] <span class="o">.</span><span class="i">paket</span><span class="o">.</span><span class="i">exe</span> <span class="i">update</span></pre>
+</td>
+</tr>
+</table>
+
+<p><code>paket.unity3d.exe</code> should now be present under <code>./packages/Paket.Unity3D/tools/</code></p>
+
 <p>For more info on <code>paket.dependencies</code> check the <a href="http://fsprojects.github.io/Paket/dependencies-file.html">Paket documentation</a></p>
 
 <h2><a name="paket-unity3d-references" class="anchor" href="#paket-unity3d-references">paket.unity3d.references</a></h2>
 
-<p>Then add a <code>paket.unity3d.references</code> next to the <code>Assets</code> directory of the Unity3D project which contains the <code>LibNoise</code> reference.</p>
+<p>Then add a <code>paket.unity3d.references</code> file next to the <code>Assets</code> directory of your Unity3D project.</p>
+
+<p>Declare your dependencies, for example:</p>
+
+<p>In <code>paket.dependencies</code>:</p>
 
 <table class="pre"><tr><td class="lines"><pre class="fssnip">
 <span class="l">1: </span>
 </pre>
 </td>
 <td class="snippet"><pre class="fssnip">
-<span class="i">LibNoise</span></pre>
+<span class="i">nuget</span> <span class="i">Paket</span><span class="o">.</span><span class="i">Unity3D</span><span class="o">.</span><span class="i">Example</span><span class="o">.</span><span class="i">Source</span></pre>
 </td>
 </tr>
 </table>
 
+<p>In <code>paket.unity3d.references</code>:</p>
+
+<table class="pre"><tr><td class="lines"><pre class="fssnip">
+<span class="l">1: </span>
+</pre>
+</td>
+<td class="snippet"><pre class="fssnip">
+<span class="i">Paket</span><span class="o">.</span><span class="i">Unity3D</span><span class="o">.</span><span class="i">Example</span><span class="o">.</span><span class="i">Source</span></pre>
+</td>
+</tr>
+</table>
+
+<p><code>paket.unity3d.references</code> is the same as a <code>paket.references</code> file. For more info on <code>paket.dependencies</code> check the <a href="http://fsprojects.github.io/Paket/references-files.html">Paket documentation</a></p>
+
 <h2><a name="Update-and-install" class="anchor" href="#Update-and-install">Update and install</a></h2>
 
-<p>Update your dependencies with <a href="http://fsprojects.github.io/Paket">Paket</a></p>
+<p>Update your dependencies with <a href="http://fsprojects.github.io/Paket/">Paket</a></p>
 
 <table class="pre"><tr><td><pre lang="batchfile">$ [mono] .paket/paket.exe update</pre></td></tr></table>
 
@@ -83,16 +128,12 @@
 
 <table class="pre"><tr><td><pre lang="batchfile">$ [mono] packages/Paket.Unity3D/tools/paket.unity3d.exe</pre></td></tr></table>
 
-<p>LibNoise is now added to the Assets directory and the directory should look like this</p>
-
-<p><img src="img/quick-start-folders.png" alt="alt text" title="Directory structure" /></p>
-
-<p>Now LibNoise can be accessed in by other code in the Unity3D project.</p>
+<p>Your dependencies should now be added to the Assets directory.</p>
 
 
         </div>
         <div class="span3">
-          <img src="./img/logo.png" alt="F# Project" style="width:150px;margin:10px" />  
+          <img src="./img/logo.png" alt="F# Project" style="width:150px;margin:10px" />
           <ul class="nav nav-list" id="menu" style="margin-top: 20px;">
             <li class="nav-header">Paket.Unity3D</li>
             <li><a href="./index.html">Home page</a></li>
@@ -101,9 +142,13 @@
             <li><a href="http://github.com/devboy/Paket.Unity3D">Source Code on GitHub</a></li>
             <li><a href="./license.html">License</a></li>
             <li><a href="./release-notes.html">Release Notes</a></li>
-            
-            <li class="nav-header">Getting started</li>
-            <li><a href="./tutorial.html">Sample tutorial</a></li>
+
+            <li class="nav-header">Documentation</li>
+            <li><a href="./tutorial.html">Quick start guide</a></li>
+            <li class="divider"></li>
+            <li><a href="./source-dependencies.html">Source dependencies</a></li>
+            <li><a href="./dll-dependencies.html">DLL dependencies</a></li>
+            <li><a href="./xcode-linking.html">XCode linking</a></li>
 
             <li class="nav-header">Documentation</li>
             <li><a href="./reference/index.html">API Reference</a></li>
