@@ -4,10 +4,10 @@ using System.Reflection;
 [assembly: AssemblyTitleAttribute("Paket.Unity3D.Bootstrapper")]
 [assembly: AssemblyProductAttribute("Paket.Unity3D")]
 [assembly: AssemblyDescriptionAttribute("Piggy-backs ontop of Paket to add dependencies to Unity3D projects")]
-[assembly: AssemblyVersionAttribute("0.0.6")]
-[assembly: AssemblyFileVersionAttribute("0.0.6")]
+[assembly: AssemblyVersionAttribute("0.0.8")]
+[assembly: AssemblyFileVersionAttribute("0.0.8")]
 namespace System {
     internal static class AssemblyVersionInformation {
-        internal const string Version = "0.0.6";
+        internal const string Version = "0.0.8";
     }
 }
