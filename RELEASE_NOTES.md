@@ -1,5 +1,14 @@
-#### 0.0.6 - February 25 2015
+#### 0.0.8 - February 25 2015
 * Adds Paket.Unity3D.Bootstrapper
+
+#### 0.0.7 - January 19 2015
+* More documentation and guides
+* Example project
+
+#### 0.0.6 - January 14 2015
+* Updates for Paket.Core 0.22.9
+* Does not modify paths of "Plugins" directories
+* Removed DLL embedding (postponed until Unity5 where you can link DLLs per platform)
 
 #### 0.0.5 - November 12 2014
 * Cleans `Paket.Unity3D` directories in Unity3D projects when updating dependencies

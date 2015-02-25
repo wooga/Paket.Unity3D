@@ -159,7 +159,7 @@ Target "MergeExe" (fun _ ->
     CreateDir buildMergedDir
 
     let toPack =
-        ["paket.unity3d.exe"; "FSharp.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
+        ["paket.unity3d.exe"; "Paket.Core.dll"; "FSharp.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
         |> List.map (fun l -> buildDir @@ l)
         |> separated " "
 
@@ -194,9 +194,32 @@ Target "MergeExe" (fun _ ->
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
-Target "NuGet" (fun _ ->
-    NuGet (fun p ->
-        { p with
+let publishNugetParam =
+  #if MONO
+  false
+  #else
+  hasBuildParam "nugetkey"
+  #endif
+
+let publishNuget nugetParams =
+  NuGet (fun p -> nugetParams) ("nuget/" + nugetParams.Project + ".nuspec")
+#if MONO
+  if hasBuildParam "nugetkey" then
+    let source =
+      if isNullOrEmpty nugetParams.PublishUrl then ""
+      else sprintf "-s %s" nugetParams.PublishUrl
+    let args = sprintf "push \"%s\" %s %s" (nugetParams.OutputPath @@ sprintf "%s.%s.nupkg" nugetParams.Project nugetParams.Version) nugetParams.AccessKey source
+    let result =
+      ExecProcess (fun info ->
+        info.FileName <- nugetParams.ToolPath
+        info.WorkingDirectory <- FullName nugetParams.WorkingDir
+        info.Arguments <- args) nugetParams.TimeOut
+    if result <> 0 then failwithf "Error during NuGet push. %s %s" nugetParams.ToolPath args
+#endif
+
+
+Target "NuGet->Tool" (fun _ ->
+    { NuGetHelper.NuGetDefaults() with
             Authors = authors
             Project = project
             Summary = summary
@@ -207,10 +230,29 @@ Target "NuGet" (fun _ ->
             Tags = tags
             OutputPath = "bin"
             AccessKey = getBuildParamOrDefault "nugetkey" ""
-            Publish = hasBuildParam "nugetkey"
-            Dependencies = [] })
-        ("nuget/" + project + ".nuspec")
+            Publish = publishNugetParam
+            Dependencies = [] }
+    |> publishNuget
 )
+
+Target "NuGet->Example" (fun _ ->
+  { NuGetHelper.NuGetDefaults() with
+        Authors = authors
+        Project = project + ".Example.Source"
+        Summary = "Example project demonstrating Paket.Unity3D"
+        Description = "Example project demonstrating Paket.Unity3D"
+        Version = release.NugetVersion
+        ReleaseNotes = String.Join(Environment.NewLine, release.Notes)
+        WorkingDir = "."
+        Tags = tags
+        OutputPath = "bin"
+        AccessKey = getBuildParamOrDefault "nugetkey" ""
+        Publish = publishNugetParam
+        Dependencies = [] }
+  |> publishNuget
+)
+
+Target "NuGet" DoNothing
 
 // --------------------------------------------------------------------------------------
 // Generate the documentation
@@ -320,6 +362,10 @@ Target "All" DoNothing
   ==> "MergeExe"
   ==> "NuGet"
   ==> "BuildPackage"
+
+"NuGet->Tool"
+  ==> "NuGet->Example"
+  ==> "NuGet"
 
 "CleanDocs"
   ==> "GenerateHelp"
