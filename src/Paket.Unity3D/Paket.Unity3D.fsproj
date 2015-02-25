@@ -23,9 +23,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <WarningLevel>3</WarningLevel>
     <DocumentationFile>..\..\bin\paket.unity3d.xml</DocumentationFile>
-    <StartWorkingDirectory>\\psf\Home\Development\wooga\test\</StartWorkingDirectory>
     <StartAction>Program</StartAction>
-    <StartProgram>Z:\Development\devboy\Paket.Unity3D\bin\paket.unity3d.exe</StartProgram>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -153,16 +151,12 @@
     </When>
   </Choose>
   <ItemGroup>
-    <Compile Include="Constants.fs" />
-    <Compile Include="Unity3DReferencesFile.fs" />
-    <Compile Include="InstallProcess.fs" />
-    <Compile Include="Program.fs" />
+    <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Constants.fs" />
     <Compile Include="Unity3DReferencesFile.fs" />
     <Compile Include="InstallProcess.fs" />
     <Compile Include="Program.fs" />
     <None Include="App.config" />
-    <Compile Include="AssemblyInfo.fs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="mscorlib" />
@@ -170,17 +164,9 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
-    <Reference Include="mscorlib" />
-    <Reference Include="FSharp.Core, Version=$(TargetFSharpCoreVersion), Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Numerics" />
-    <Reference Include="System.Xml" />
     <Reference Include="Paket.Core">
       <HintPath>..\..\packages\Paket.Core\lib\Paket.Core.dll</HintPath>
       <Private>True</Private>

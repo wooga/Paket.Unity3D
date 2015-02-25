@@ -1,3 +1,6 @@
+#### 0.0.10 - February 25 2015
+* Git merge hickup has been fixed and paket.unity3d.exe should be working again
+
 #### 0.0.9 - February 25 2015
 * Attaches AssemblyInfo version numbers so the bootstrapper can function
 
