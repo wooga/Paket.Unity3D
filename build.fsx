@@ -61,6 +61,9 @@ let gitName = "Paket.Unity3D"
 // The url for the raw files hosted
 let gitRaw = environVarOrDefault "gitRaw" "https://raw.github.com/devboy"
 
+let buildDir = "bin"
+let buildMergedDir = buildDir @@ "merge"
+
 // --------------------------------------------------------------------------------------
 // END TODO: The rest of the file includes standard build steps
 // --------------------------------------------------------------------------------------
@@ -153,21 +156,40 @@ Target "SourceLink" (fun _ ->
 #endif
 
 Target "MergeExe" (fun _ ->
-    CreateDir "bin/merge"
+    CreateDir buildMergedDir
 
     let toPack =
-        ["paket.unity3d.exe"; "Paket.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
-        |> List.map (fun l -> "bin/" @@ l)
+        ["paket.unity3d.exe"; "FSharp.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
+        |> List.map (fun l -> buildDir @@ l)
         |> separated " "
 
     let result =
         ExecProcess (fun info ->
             info.FileName <- currentDirectory @@ "tools" @@ "ILRepack" @@ "ILRepack.exe"
-            info.Arguments <- sprintf "/internalize /verbose /lib:%s /ver:%s /out:%s %s" "bin" release.AssemblyVersion ("bin/merge" @@ "paket.unity3d.exe") toPack
+            info.Arguments <- sprintf "/verbose /lib:%s /ver:%s /out:%s %s" buildDir release.AssemblyVersion (buildMergedDir @@ "paket.unity3d.exe") toPack
             ) (TimeSpan.FromMinutes 5.)
 
     if result <> 0 then failwithf "Error during ILRepack execution."
 )
+
+
+//Target "MergeExe" (fun _ ->
+//    CreateDir "bin/merge"
+//
+//    let toPack =
+//        ["paket.unity3d.exe"; "Paket.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
+//        |> List.map (fun l -> "bin" @@ l)
+//        |> separated " "
+//
+//    let result =
+//        ExecProcess (fun info ->
+//            info.FileName <- currentDirectory @@ "tools" @@ "ILRepack" @@ "ILRepack.exe"
+//            info.Arguments <- sprintf "/internalize /verbose /lib:%s /ver:%s /out:%s %s" "bin" release.AssemblyVersion ("bin" @@ "merge" @@ "paket.unity3d.exe") toPack
+//            info.ErrorDialog <- true
+//            ) (TimeSpan.FromMinutes 5.)
+//
+//    if result <> 0 then failwithf "Error during ILRepack execution."
+//)
 
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
@@ -307,8 +329,11 @@ Target "All" DoNothing
 "GenerateHelp"
   ==> "KeepRunning"
 
+#if MONO
+#else
 "ReleaseDocs"
   ==> "Release"
+#endif
 
 "BuildPackage"
   ==> "Release"
