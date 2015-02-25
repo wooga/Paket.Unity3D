@@ -1,3 +1,6 @@
+#### 0.0.9 - February 25 2015
+* Attaches AssemblyInfo version numbers so the bootstrapper can function
+
 #### 0.0.8 - February 25 2015
 * Adds Paket.Unity3D.Bootstrapper
 

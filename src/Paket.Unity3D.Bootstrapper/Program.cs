@@ -55,11 +55,13 @@ namespace Paket.Unity3D.Bootstrapper
                     try
                     {
                         FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(target);
+                        Console.WriteLine("fvi:" + fvi);
                         if (fvi.FileVersion != null)
                             localVersion = fvi.FileVersion;
                     }
-                    catch (Exception)
+                    catch (Exception e)
                     {
+                        Console.WriteLine(e.Message);
                     }
                 }
 
