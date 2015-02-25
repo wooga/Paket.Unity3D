@@ -269,6 +269,7 @@ Target "Release" (fun _ ->
     createClient (getBuildParamOrDefault "github-user" "") (getBuildParamOrDefault "github-pw" "")
     |> createDraft gitOwner gitName release.NugetVersion (release.SemVer.PreRelease <> None) release.Notes
     |> uploadFile "bin/merge/paket.unity3d.exe"
+    |> uploadFile "bin/paket.unity3d.bootstrapper.exe"
     |> releaseDraft
     |> Async.RunSynchronously
 )

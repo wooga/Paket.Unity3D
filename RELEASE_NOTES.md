@@ -1,3 +1,6 @@
+#### 0.0.6 - February 25 2015
+* Adds Paket.Unity3D.Bootstrapper
+
 #### 0.0.5 - November 12 2014
 * Cleans `Paket.Unity3D` directories in Unity3D projects when updating dependencies
 
