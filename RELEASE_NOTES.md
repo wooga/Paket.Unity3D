@@ -1,3 +1,6 @@
+#### 0.0.11 - February 26 2015
+* Removes debug information from bootstrapper
+
 #### 0.0.10 - February 25 2015
 * Git merge hickup has been fixed and paket.unity3d.exe should be working again
 
