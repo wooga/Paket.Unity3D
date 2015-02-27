@@ -1,3 +1,6 @@
+#### 0.0.12 - February 26 2015
+* Implements Add command
+
 #### 0.0.11 - February 26 2015
 * Removes debug information from bootstrapper
 
