@@ -64,12 +64,13 @@ let private removeCopiedFiles (project:Paket.Unity3D.Project) =
 
 let CreateInstallModel(root, sources, force, package) = 
     async { 
-        let! (package, files) = RestoreProcess.ExtractPackage(root, sources, force, package)
+        let! (package, files, targets) = RestoreProcess.ExtractPackage(root, sources, force, package)
         let (PackageName name) = package.Name
         let nuspec = FileInfo(sprintf "%s/packages/%s/%s.nuspec" root name name)
         let nuspec = Nuspec.Load nuspec.FullName
         let files = files |> Seq.map (fun fi -> fi.FullName)
-        return package, InstallModel.CreateFromLibs(package.Name, package.Version, package.FrameworkRestrictions, files, nuspec)
+        let targets = targets |> Seq.map (fun fi -> fi.FullName)
+        return package, InstallModel.CreateFromLibs(package.Name, package.Version, package.Settings.FrameworkRestrictions, files, targets, nuspec)
     }
 
 /// Restores the given packages from the lock file.
@@ -107,12 +108,12 @@ let InstallIntoProjects(sources,force, hard, withBindingRedirects, lockFile:Lock
 
         let usedPackageNames =
             usedPackages
-            |> Seq.map NormalizedPackageName
+            |> Seq.map (fun x -> x.Key |> NormalizedPackageName )
             |> Set.ofSeq
 
         removeCopiedFiles project
 
-        copyContentFiles(project, findPackagesWithContent(root,usedPackages))
+        copyContentFiles(project, findPackagesWithContent(root,HashSet(usedPackages.Keys)))
         |> ignore
 
 /// Installs the given all packages from the lock file.

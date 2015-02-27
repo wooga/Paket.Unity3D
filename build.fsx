@@ -159,7 +159,7 @@ Target "MergeExe" (fun _ ->
     CreateDir buildMergedDir
 
     let toPack =
-        ["paket.unity3d.exe"; "Paket.Core.dll"; "FSharp.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
+        ["paket.unity3d.exe"; "Paket.Core.dll"; "FSharp.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll"; "UnionArgParser.dll";]
         |> List.map (fun l -> buildDir @@ l)
         |> separated " "
 
