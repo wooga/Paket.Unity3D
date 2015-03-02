@@ -6,6 +6,11 @@ open System.IO
 open Paket.Domain
 open Paket.Unity3D
 
+let private add (project:DirectoryInfo) package =
+        UnityProject.FindOrCreateReferencesFile(project)
+            .AddNuGetReference(package)
+            .Save()    
+
 let Add(dependenciesFileName, package, version, force, hard, interactive, installAfter) =
     let existingDependenciesFile = DependenciesFile.ReadFromFile(dependenciesFileName)
 
@@ -22,13 +27,17 @@ let Add(dependenciesFileName, package, version, force, hard, interactive, instal
 
     //let lockFile = UpdateProcess.SelectiveUpdate(dependenciesFile,Some(NormalizedPackageName package),force)
     
+    let projects = UnityProject.FindAllProjects(Path.GetDirectoryName lockFile.FileName)
+
     if interactive then
-        let projects = UnityProject.FindAllProjects(Path.GetDirectoryName lockFile.FileName)
         for project in projects do
-            if Utils.askYesNo(sprintf "  Add to %s?" project.Name) then
-                UnityProject.FindOrCreateReferencesFile(project)
-                    .AddNuGetReference(package)
-                    .Save()
+            if Utils.askYesNo(sprintf "  Add package to UnityProject: %s at %s?" project.Name project.Parent.FullName) then
+                add project package
+    else if projects.Length=1 then
+        add projects.[0] package
+    else if projects.Length > 1 then
+        Paket.Logging.traceWarn "More than one unity project was found, please run interactive mode (--interactive) to pick and choose target project(s)"
+            
 
 //    if installAfter then
 //        let sources = dependenciesFile.GetAllPackageSources()

@@ -1,3 +1,6 @@
+#### 0.0.13 - February 26 2015
+* Add command installs automatically when single project is found and displays a warning when multiple projects are found but interactive command is not given
+
 #### 0.0.12 - February 26 2015
 * Implements Add command
 

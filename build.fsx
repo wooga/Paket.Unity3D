@@ -172,25 +172,6 @@ Target "MergeExe" (fun _ ->
     if result <> 0 then failwithf "Error during ILRepack execution."
 )
 
-
-//Target "MergeExe" (fun _ ->
-//    CreateDir "bin/merge"
-//
-//    let toPack =
-//        ["paket.unity3d.exe"; "Paket.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll";]
-//        |> List.map (fun l -> "bin" @@ l)
-//        |> separated " "
-//
-//    let result =
-//        ExecProcess (fun info ->
-//            info.FileName <- currentDirectory @@ "tools" @@ "ILRepack" @@ "ILRepack.exe"
-//            info.Arguments <- sprintf "/internalize /verbose /lib:%s /ver:%s /out:%s %s" "bin" release.AssemblyVersion ("bin" @@ "merge" @@ "paket.unity3d.exe") toPack
-//            info.ErrorDialog <- true
-//            ) (TimeSpan.FromMinutes 5.)
-//
-//    if result <> 0 then failwithf "Error during ILRepack execution."
-//)
-
 // --------------------------------------------------------------------------------------
 // Build a NuGet package
 
