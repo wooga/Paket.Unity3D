@@ -6,13 +6,15 @@ using System.Reflection;
 
 namespace Paket.Unity3D.Bootstrapper
 {
-    class Program
+    internal class Program
     {
-        static IWebProxy GetDefaultWebProxyFor(String url)
+        const string PaketUnity3DVersionEnv = "PAKET.UNITY3D.VERSION";
+
+        private static IWebProxy GetDefaultWebProxyFor(String url)
         {
-            IWebProxy result = WebRequest.GetSystemWebProxy();
-            Uri uri = new Uri(url);
-            Uri address = result.GetProxy(uri);
+            var result = WebRequest.GetSystemWebProxy();
+            var uri = new Uri(url);
+            var address = result.GetProxy(uri);
 
             if (address == uri)
                 return null;
@@ -24,14 +26,14 @@ namespace Paket.Unity3D.Bootstrapper
             };
         }
 
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var folder = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             var target = Path.Combine(folder, "paket.unity3d.exe");
 
             try
             {
-                var latestVersion = "";
+                var latestVersion = Environment.GetEnvironmentVariable(PaketUnity3DVersionEnv) ?? ""; ;
                 var ignorePrerelease = true;
 
                 if (args.Length >= 1)
@@ -39,6 +41,7 @@ namespace Paket.Unity3D.Bootstrapper
                     if (args[0] == "prerelease")
                     {
                         ignorePrerelease = false;
+                        latestVersion = "";
                         Console.WriteLine("Prerelease requested. Looking for latest prerelease.");
                     }
                     else
@@ -47,6 +50,8 @@ namespace Paket.Unity3D.Bootstrapper
                         Console.WriteLine("Version {0} requested.", latestVersion);
                     }
                 }
+                else if (!String.IsNullOrWhiteSpace(latestVersion))
+                    Console.WriteLine("Version {0} requested.", latestVersion);
                 else Console.WriteLine("No version specified. Downloading latest stable.");
                 var localVersion = "";
 
@@ -54,7 +59,7 @@ namespace Paket.Unity3D.Bootstrapper
                 {
                     try
                     {
-                        FileVersionInfo fvi = FileVersionInfo.GetVersionInfo(target);
+                        var fvi = FileVersionInfo.GetVersionInfo(target);
                         if (fvi.FileVersion != null)
                             localVersion = fvi.FileVersion;
                     }
@@ -65,9 +70,9 @@ namespace Paket.Unity3D.Bootstrapper
 
                 if (latestVersion == "")
                 {
-                    using (WebClient client = new WebClient())
+                    using (var client = new WebClient())
                     {
-                        var releasesUrl = "https://github.com/devboy/Paket.Unity3D/releases";
+                        const string releasesUrl = "https://github.com/devboy/Paket.Unity3D/releases";
 
                         client.Headers.Add("user-agent", "Paket.Unity3D.Bootstrapper");
                         client.UseDefaultCredentials = true;
@@ -88,25 +93,28 @@ namespace Paket.Unity3D.Bootstrapper
 
                 if (!localVersion.StartsWith(latestVersion))
                 {
-                    var url = String.Format("https://github.com/devboy/Paket.Unity3D/releases/download/{0}/paket.unity3d.exe", latestVersion);
+                    var url =
+                        String.Format(
+                            "https://github.com/devboy/Paket.Unity3D/releases/download/{0}/paket.unity3d.exe",
+                            latestVersion);
 
                     Console.WriteLine("Starting download from {0}", url);
 
-                    var request = (HttpWebRequest)HttpWebRequest.Create(url);
+                    var request = (HttpWebRequest) WebRequest.Create(url);
 
                     request.UseDefaultCredentials = true;
                     request.Proxy = GetDefaultWebProxyFor(url);
 
                     request.AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate;
-                    using (HttpWebResponse httpResponse = (HttpWebResponse)request.GetResponse())
+                    using (var httpResponse = (HttpWebResponse) request.GetResponse())
                     {
-                        using (Stream httpResponseStream = httpResponse.GetResponseStream())
+                        using (var httpResponseStream = httpResponse.GetResponseStream())
                         {
                             const int bufferSize = 4096;
-                            byte[] buffer = new byte[bufferSize];
-                            int bytesRead = 0;
+                            var buffer = new byte[bufferSize];
+                            var bytesRead = 0;
 
-                            using (FileStream fileStream = File.Create(target))
+                            using (var fileStream = File.Create(target))
                             {
                                 while ((bytesRead = httpResponseStream.Read(buffer, 0, bufferSize)) != 0)
                                 {
@@ -120,7 +128,6 @@ namespace Paket.Unity3D.Bootstrapper
                 {
                     Console.WriteLine("Paket.Unity3D.exe {0} is up to date.", localVersion);
                 }
-
             }
             catch (Exception exn)
             {

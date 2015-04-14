@@ -1,3 +1,6 @@
+#### 0.1.0 - April 14 2015
+* Adds `PAKET.UNITY3D.VERSION` environment veriable to request a specific version via the paket.unity3d.bootstrapper.exe
+
 #### 0.0.14 - February 26 2015
 * Add command installs automatically when single project is found and displays a warning when multiple projects are found but interactive command is not given
 
