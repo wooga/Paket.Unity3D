@@ -128,6 +128,13 @@ let createModel(root, sources, force, lockFile : LockFile, packages:Set<Normaliz
 //            fail <| ReferencesFileParseError (FileInfo(file)))
 //    |> collect
 
+type FileToInstall =
+    | Library of file:string * relative:string
+    | File of file:string * relative:string
+
+type FilesToInstall = {package:PackageName;files:Set<FileToInstall>}
+    with member self.MergeWith(other:FilesToInstall) = {self with files=Set.union self.files other.files} 
+
 /// Installs all packages from the lock file.
 let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile, projects : Paket.Unity3D.Project seq) =
     let packagesToInstall =
@@ -199,21 +206,40 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
             |> Seq.map (fun u -> NormalizedPackageName u.Key,u.Value)
             |> Map.ofSeq
 
-        let libs = 
-            usedPackageSettings
-            |> Seq.map (fun u -> u.Key)
-            |> Seq.map (fun p -> p,model.TryFind p)
-            |> Seq.choose (function | n,Some(m) -> Some(n,m) | _ -> None)
-            |> Seq.map (fun (n,m) -> n,m.GetLibReferences(FrameworkIdentifier.DotNetFramework(FrameworkVersion.V3_5)))
-                
-        printfn "libs:%A" libs
+        let filesToInstall = ref Map.empty
+        let addFilesToInstall (fs:FilesToInstall) =
+            let p = fs.package
+            if Map.containsKey p !filesToInstall |> not 
+                then filesToInstall := Map.add p fs !filesToInstall
+                else filesToInstall := Map.add p ((Map.find p !filesToInstall).MergeWith(fs)) !filesToInstall 
 
-        let contents =
-            usedPackages
-            |> Seq.map (fun kv -> NormalizedPackageName kv.Key,findContentForPackage(root,kv.Key))
-            |> Seq.choose (function n,Some(c) -> Some(n,filesInDir c) | _ -> None)
+        let libraryFilesToInstall ls =
+            Seq.map (fun l -> Library(l,Path.GetFileName(l))) ls
+            |> Set.ofSeq
+
+        usedPackages
+        |> Seq.map (fun u -> u.Key)
+        |> Seq.map (fun p -> p,model.TryFind (NormalizedPackageName p))
+        |> Seq.choose (function | n,Some(m) -> Some(n,m) | _ -> None)
+        |> Seq.map (fun (n,m) -> n,m.GetLibReferences(FrameworkIdentifier.DotNetFramework(FrameworkVersion.V3_5)))
+        |> Seq.iter (fun (n,m) -> addFilesToInstall {package=n;files=libraryFilesToInstall m} )
+                
+        printfn "libs:%A" !filesToInstall
+
+        let contentFilesToInstall p ls =
+            let contentDir = findContentForPackage(root,p).Value.FullName + Path.DirectorySeparatorChar.ToString()
+            printfn "contentDir:%s" contentDir
+            ls
+            |> Seq.map FileInfo
+            |> Seq.map (fun l -> File(l.FullName,createRelativePath contentDir l.FullName))
+            |> Set.ofSeq
+
+        usedPackages
+        |> Seq.map (fun kv -> kv.Key,findContentForPackage(root,kv.Key))
+        |> Seq.choose (function n,Some(c) -> Some(n,filesInDir c |> contentFilesToInstall n) | _ -> None)
+        |> Seq.iter (fun (p,fs) -> addFilesToInstall {package=p;files=fs})
              
-        printfn "contents:%A" contents
+        printfn "libs:%A" !filesToInstall
 
         ()
 
