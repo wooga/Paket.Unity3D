@@ -7,7 +7,9 @@ nuget Nuget.CommandLine
 nuget FAKE
 nuget Octokit
 nuget SourceLink.Fake
-nuget Paket.Core == 0.31.1
+nuget Paket.Core == 1.19.7
 nuget UnionArgParser
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
+github fsharp/FAKE src/app/FakeLib/Globbing/Globbing.fs
+github fsprojects/Chessie src/Chessie/ErrorHandling.fs

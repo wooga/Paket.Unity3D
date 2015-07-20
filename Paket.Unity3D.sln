@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.22823.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
 	ProjectSection(SolutionItems) = preProject
@@ -37,6 +37,11 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Paket.Unity3D.Tests", "tests\Paket.Unity3D.Tests\Paket.Unity3D.Tests.fsproj", "{E789C72A-5CFD-436B-8EF1-61AA2852A89F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paket.Unity3D.Bootstrapper", "src\Paket.Unity3D.Bootstrapper\Paket.Unity3D.Bootstrapper.csproj", "{F16F5B64-62DA-4BEC-9783-1EFDF002E6A8}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8E2D1578-1B13-4CC7-AB17-930F18B0D7F8}"
+	ProjectSection(SolutionItems) = preProject
+		tests\sample\unity3d.fsx = tests\sample\unity3d.fsx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

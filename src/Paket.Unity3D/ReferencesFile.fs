@@ -1,9 +1,9 @@
 ﻿/// Utilities to install Paket dependencies into Unity3D projects 
 namespace Paket.Unity3D
 
-open Paket.Utils
 open System.IO
-open Paket.Rop
+open Chessie.ErrorHandling
+open Fake.Globbing
 
 type Project(references:Paket.ReferencesFile) =
     member this.References = references
@@ -12,16 +12,16 @@ type Project(references:Paket.ReferencesFile) =
     member this.Assets = DirectoryInfo(Path.Combine(this.Directory.FullName,"Assets"))
     member this.PaketDirectory = DirectoryInfo(Path.Combine(this.Assets.FullName,Constants.Unity3DCopyFolderName))
 
-module Utils =
+[<AutoOpen>]
+module private Utils =
     /// Gets all dirs with the given pattern
-    let inline FindAllDirs(folder, pattern) = DirectoryInfo(folder).GetDirectories(pattern, SearchOption.AllDirectories)
+    let inline FindAllDirs folder pattern = DirectoryInfo(folder).GetDirectories(pattern, SearchOption.AllDirectories)
+    let inline FindAllFiles folder pattern = DirectoryInfo(folder).GetFiles(pattern, SearchOption.AllDirectories)
     let inline (+/) a b = Path.Combine(a,b)
-
-open Utils
 
 module UnityProject =
     let FindAllProjects folder =
-        FindAllDirs(folder, "Assets")
+        FindAllDirs folder "Assets"
         |> Array.filter (fun d -> FileInfo(d.Parent.FullName+/"ProjectSettings"+/"ProjectSettings.asset").Exists)
         |> Array.map (fun d -> d.Parent)
 
@@ -35,9 +35,9 @@ module UnityProject =
 module ReferencesFile = 
     let private ProjectReferenceFile (r:FileInfo) =
         let proj x = Project(x)
-        try r.FullName |> Paket.ReferencesFile.FromFile |> proj |> succeed
+        try r.FullName |> Paket.ReferencesFile.FromFile |> proj |> Result.Succeed
         with _ -> fail "Project not valid"
             
     let FindAllReferencesFiles(folder) =
-        FindAllFiles(folder, Constants.Unity3DReferencesFile) 
+        FindAllFiles folder Constants.Unity3DReferencesFile
         |> Seq.map ProjectReferenceFile

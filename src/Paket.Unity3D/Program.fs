@@ -56,7 +56,7 @@ try
             let deps = Dependencies.Locate().DependenciesFile |> DependenciesFile.ReadFromFile
             let lock = deps.FindLockfile().FullName |> LockFile.LoadFrom
             let sources = deps.GetAllPackageSources()
-            Paket.Unity3D.InstallProcess.Install(sources,false,true,false,lock)
+            Paket.Unity3D.InstallProcess.Install(sources,InstallerOptions.Default,lock)
         | Command(Add, rest) -> 
             let results = commandArgs<AddArgs> rest
             let nuget = results.GetResult <@ AddArgs.Nuget @>
