@@ -116,18 +116,6 @@ let createModel(root, sources, force, lockFile : LockFile, packages:Set<Normaliz
 
     extractedPackages
 
-//let findAllReferencesFiles root =
-//    root
-//    |> ProjectFile.FindAllProjects
-//    |> Array.choose (fun p -> ProjectFile.FindReferencesFile(FileInfo(p.FileName))
-//                                |> Option.map (fun r -> p, r))
-//    |> Array.map (fun (project,file) ->
-//        try
-//            ok <| (project, ReferencesFile.FromFile(file))
-//        with _ ->
-//            fail <| ReferencesFileParseError (FileInfo(file)))
-//    |> collect
-
 type FileToInstall =
     | Library of file:string * relative:string
     | File of file:string * relative:string
@@ -201,11 +189,6 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
 
             !d
 
-        let usedPackageSettings =
-            usedPackages
-            |> Seq.map (fun u -> NormalizedPackageName u.Key,u.Value)
-            |> Map.ofSeq
-
         let filesToInstall = ref Map.empty
         let addFilesToInstall (fs:FilesToInstall) =
             let p = fs.package
@@ -217,29 +200,69 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
             Seq.map (fun l -> Library(l,Path.GetFileName(l))) ls
             |> Set.ofSeq
 
-        usedPackages
-        |> Seq.map (fun u -> u.Key)
-        |> Seq.map (fun p -> p,model.TryFind (NormalizedPackageName p))
-        |> Seq.choose (function | n,Some(m) -> Some(n,m) | _ -> None)
-        |> Seq.map (fun (n,m) -> n,m.GetLibReferences(FrameworkIdentifier.DotNetFramework(FrameworkVersion.V3_5)))
-        |> Seq.iter (fun (n,m) -> addFilesToInstall {package=n;files=libraryFilesToInstall m} )
-                
-        printfn "libs:%A" !filesToInstall
-
         let contentFilesToInstall p ls =
             let contentDir = findContentForPackage(root,p).Value.FullName + Path.DirectorySeparatorChar.ToString()
-            printfn "contentDir:%s" contentDir
             ls
             |> Seq.map FileInfo
             |> Seq.map (fun l -> File(l.FullName,createRelativePath contentDir l.FullName))
             |> Set.ofSeq
 
         usedPackages
+        |> Seq.map (fun u -> u.Key)
+        |> Seq.map (fun p -> p,model.TryFind (NormalizedPackageName p))
+        |> Seq.choose (function | n,Some(m) -> Some(n,m) | _ -> None)
+        |> Seq.map (fun (n,m) -> n,m.GetLibReferences(Constants.Unity3DDotNetCompatibiliy))
+        |> Seq.iter (fun (n,m) -> addFilesToInstall {package=n;files=libraryFilesToInstall m} )
+        
+        usedPackages
         |> Seq.map (fun kv -> kv.Key,findContentForPackage(root,kv.Key))
         |> Seq.choose (function n,Some(c) -> Some(n,filesInDir c |> contentFilesToInstall n) | _ -> None)
         |> Seq.iter (fun (p,fs) -> addFilesToInstall {package=p;files=fs})
-             
+        
+        do System.IO.Directory.CreateDirectory project.PaketDirectory.FullName |> ignore
+
+        let inline (+/) x y = Path.Combine(x,y)
+
+//        let rec existingPackageFiles p pd (d:DirectoryInfo) =
+//            seq {for f in d.GetFiles() do yield p,createRelativePath pd f.FullName
+//                 for d' in d.GetDirectories() do yield! existingPackageFiles p pd d'}
+//
+//        let exisitingFiles =
+//            seq { for d in project.PaketDirectory.GetDirectories() do 
+//                    yield! existingPackageFiles (PackageName(d.Name)) (d.FullName+Path.DirectorySeparatorChar.ToString()) d}
+        
+        let existingFiles =
+            filesInDir project.PaketDirectory
+
+        let isPlugin (s:string) =
+            Constants.PluginDirs |> Seq.exists s.StartsWith
+
+        let safeDelete (f:string) =   
+            if f.EndsWith(".meta") |> not then do File.Delete(f)
+        
+        for e in existingFiles 
+            do safeDelete e
+            
+        let install (p:PackageName) (f:FileToInstall) =
+            let source,target = 
+                match f with 
+                | Library(s,r) -> s,project.DirectorForPackage p +/ r
+                | File(s,r) when isPlugin r -> s,project.Assets.FullName +/ r
+                | File(s,r) -> s,project.DirectorForPackage p +/ r
+            do System.IO.Directory.CreateDirectory <| FileInfo(target).DirectoryName |> ignore
+            if File.Exists(target) 
+                then do File.Delete(target)
+            do File.Copy(source,target)
+
         printfn "libs:%A" !filesToInstall
+        printfn "existing:%A" existingFiles
+
+            
+
+        for pfs in !filesToInstall do
+            let p = pfs.Key
+            let fs = pfs.Value
+            for f in fs.files do install p f     
 
         ()
 

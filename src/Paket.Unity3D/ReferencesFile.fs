@@ -4,6 +4,7 @@ namespace Paket.Unity3D
 open System.IO
 open Chessie.ErrorHandling
 open Fake.Globbing
+open Paket
 
 type Project(references:Paket.ReferencesFile) =
     member this.References = references
@@ -11,6 +12,7 @@ type Project(references:Paket.ReferencesFile) =
     member this.Name = this.Directory.Name
     member this.Assets = DirectoryInfo(Path.Combine(this.Directory.FullName,"Assets"))
     member this.PaketDirectory = DirectoryInfo(Path.Combine(this.Assets.FullName,Constants.Unity3DCopyFolderName))
+    member this.DirectorForPackage(p:Paket.Domain.PackageName) = Path.Combine(this.PaketDirectory.FullName,p.Id)
 
 [<AutoOpen>]
 module private Utils =
