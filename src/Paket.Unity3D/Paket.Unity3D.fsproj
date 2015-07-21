@@ -69,7 +69,7 @@
     </Compile>
     <Compile Include="AssemblyInfo.fs" />
     <Compile Include="Constants.fs" />
-    <Compile Include="Unity3DReferencesFile.fs" />
+    <Compile Include="ReferencesFile.fs" />
     <Compile Include="InstallProcess.fs" />
     <Compile Include="AddProcess.fs" />
     <Compile Include="Program.fs" />

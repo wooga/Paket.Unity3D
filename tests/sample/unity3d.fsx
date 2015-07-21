@@ -1,5 +1,6 @@
 //#I "../../"
 #I "../../packages/Paket.Core/lib/net45"
+#I "../../packages/Newtonsoft.Json/lib/net45"
 #r "Paket.Core"
 #load "../../src/Paket.Unity3D/Constants.fs"
 #load "../../src/Paket.Unity3D/ReferencesFile.fs"

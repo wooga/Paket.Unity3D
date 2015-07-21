@@ -1,5 +1,15 @@
 NUGET
+  remote: https://wooga.artifactoryonline.com/wooga/api/nuget/nuget-private
+  specs:
+    Wooga.DeviceInfo.Unity3D.Source (4.2.1)
+    Wooga.LitJSON.Unity3D.Source (1.2.2)
+    Wooga.Threadsafe.Unity3D.Source (1.1.1)
+    Wooga.Tracking.Unity3D.Source (2.6.0)
+      Wooga.DeviceInfo.Unity3D.Source (>= 4.2.1)
+      Wooga.LitJSON.Unity3D.Source (>= 1.2.0)
+      Wooga.Threadsafe.Unity3D.Source (>= 1.1.1)
   remote: https://nuget.org/api/v2
   specs:
     Wooga.Lambda (0.5.0)
-    Wooga.Lambda.Unity3D.Source (0.5.0)
+    Wooga.Lambda.Network (0.5.0)
+      Wooga.Lambda (>= 0.5.0)

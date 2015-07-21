@@ -74,7 +74,8 @@ try
 with
 | exn when not (exn :? System.NullReferenceException) -> 
     Environment.ExitCode <- 1
-    traceErrorfn "Paket.Unity3D failed with:%s\t%s" Environment.NewLine exn.Message
+    traceErrorfn "Paket.Unity3D failed with:%s
+    t%s" Environment.NewLine exn.Message
 
     if verbose then
         traceErrorfn "StackTrace:%s  %s" Environment.NewLine exn.StackTrace
