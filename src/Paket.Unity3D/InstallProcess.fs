@@ -171,7 +171,7 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
             FindAllFiles(project.PaketDirectory.FullName,"*")
         
         let delete (f:FileInfo) =
-            if f.FullName.EndsWith(".meta") && installFiles |> Seq.exists (fun (Package.InstallFile(_,t)) -> f.Equals(t))
+            if f.FullName.EndsWith(".meta") && installFiles |> Seq.exists (fun (Package.InstallFile(_,t)) -> FileInfo(f.FullName.Replace(".meta","")).Equals(t))
                 then ()
                 else do f.Delete()
         
