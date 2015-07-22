@@ -1,6 +1,8 @@
+source ./.local
 source https://nuget.org/api/v2
 source https://wooga.artifactoryonline.com/wooga/api/nuget/nuget-private username: "nuget-consumer" password: "oG2ed4nEm4koAc8d"
 
 nuget Wooga.Tracking.Unity3D.Source
-nuget Wooga.Lambda
-nuget Wooga.Lambda.Network
+nuget Wooga.CoreServices.Identity.Unity3D.Source
+nuget Wooga.CoreServices.Unity3D.Source
+nuget Wooga.Services.ErrorAnalytics.Unity3D.Source

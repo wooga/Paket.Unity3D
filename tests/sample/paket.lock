@@ -1,15 +1,43 @@
 NUGET
+  remote: ./.local
+  specs:
+    Wooga.CoreServices.Identity.Unity3D.Source (3.2.0)
+      Wooga.Lambda
+      Wooga.LitJSON.Unity3D.Source
+      Wooga.Threadsafe.Unity3D.Source
+    Wooga.CoreServices.Unity3D.Source (3.2.0)
+      Wooga.CoreServices.Identity.Unity3D.Source
+      Wooga.DeviceInfo.Unity3D.Source
+      Wooga.Lambda
+      Wooga.LitJSON.Unity3D.Source
+      Wooga.Promises.Unity3D.Source
+      Wooga.Threadsafe.Unity3D.Source
+      Wooga.XCodeEditor.Unity3D.Source
+    Wooga.Services.ErrorAnalytics.Unity3D.Source (0.5.22)
+      Wooga.DeviceInfo.Unity3D
+      Wooga.Lambda
+      Wooga.Lambda.Network
+      Wooga.Lambda.Storage
+      Wooga.LitJSON.Unity3D
+      Wooga.Threadsafe.Unity3D
   remote: https://wooga.artifactoryonline.com/wooga/api/nuget/nuget-private
   specs:
+    Wooga.DeviceInfo.Unity3D (4.2.0)
     Wooga.DeviceInfo.Unity3D.Source (4.2.1)
+    Wooga.LitJSON.Unity3D (1.2.2)
     Wooga.LitJSON.Unity3D.Source (1.2.2)
+    Wooga.Promises.Unity3D.Source (0.4.0)
+    Wooga.Threadsafe.Unity3D (1.1.1)
     Wooga.Threadsafe.Unity3D.Source (1.1.1)
     Wooga.Tracking.Unity3D.Source (2.6.0)
       Wooga.DeviceInfo.Unity3D.Source (>= 4.2.1)
       Wooga.LitJSON.Unity3D.Source (>= 1.2.0)
       Wooga.Threadsafe.Unity3D.Source (>= 1.1.1)
+    Wooga.XCodeEditor.Unity3D.Source (1.1.2)
   remote: https://nuget.org/api/v2
   specs:
     Wooga.Lambda (0.5.0)
     Wooga.Lambda.Network (0.5.0)
+      Wooga.Lambda (>= 0.5.0)
+    Wooga.Lambda.Storage (0.5.0)
       Wooga.Lambda (>= 0.5.0)

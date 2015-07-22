@@ -16,7 +16,7 @@ NUGET
       Microsoft.Bcl (>= 1.1.10)
       Microsoft.Bcl.Build (>= 1.0.14)
     Newtonsoft.Json (7.0.1)
-    NuGet.CommandLine (2.8.5)
+    NuGet.CommandLine (2.8.6)
     NUnit (2.6.4)
     NUnit.Runners (2.6.4)
     Octokit (0.14.0)
@@ -29,9 +29,9 @@ NUGET
 GITHUB
   remote: fsharp/FAKE
   specs:
-    modules/Octokit/Octokit.fsx (3bde7566d4514ce83e88d376141ee848847ae6e9)
+    modules/Octokit/Octokit.fsx (5552e3ec59fff0fcb630d654b240d8fadd8771f8)
       Octokit
-    src/app/FakeLib/Globbing/Globbing.fs (3bde7566d4514ce83e88d376141ee848847ae6e9)
+    src/app/FakeLib/Globbing/Globbing.fs (5552e3ec59fff0fcb630d654b240d8fadd8771f8)
   remote: fsprojects/Chessie
   specs:
     src/Chessie/ErrorHandling.fs (2e4d76714d6d01ac64913317870f05d7f7ae8e37)

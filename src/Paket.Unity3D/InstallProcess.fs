@@ -14,8 +14,7 @@ module Path =
     let Relative (root:string) other =
         let sep = Path.DirectorySeparatorChar.ToString()
         let r' = if root.EndsWith(sep) then root else root + sep
-        let ret = (createRelativePath r' other).Replace('\\',Path.DirectorySeparatorChar)
-        ret
+        (createRelativePath r' other).Replace('\\',Path.DirectorySeparatorChar)
 
 [<RequireQualifiedAccess>]
 module private Package =
@@ -133,12 +132,25 @@ let UsedPackages (lockFile:LockFile) (packages:Map<NormalizedPackageName,Resolve
         !d
     usedPackages    
 
+type MetaFile =
+    | FileMetaFile of file:FileInfo * metaFile:FileInfo
+    | DirectoryMetaFile of dir:DirectoryInfo * metaFile:FileInfo
+    | DeadMetafile of metaFile:FileInfo
+    | NotAMetaFile of file:FileInfo
+    with 
+        static member Of(f:FileInfo) = 
+            match f.FullName.Replace(".meta","") with
+            | _ when not <| f.FullName.EndsWith(".meta") -> NotAMetaFile f
+            | t when File.Exists(t) -> FileMetaFile(FileInfo t,f)
+            | t when Directory.Exists(t) -> DirectoryMetaFile(DirectoryInfo t,f)
+            | _ -> DeadMetafile f
+
 /// Installs all packages from the lock file.
 let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile, projects : Paket.Unity3D.Project seq) =
     let packagesToInstall =
         projects
-        |> Seq.map (fun p ->
-            p.References
+        |> Seq.map (fun proj ->
+            proj.References
             |> lockFile.GetPackageHull
             |> Seq.map (fun p -> NormalizedPackageName p.Key))
         |> Seq.concat
@@ -167,24 +179,36 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
         
         do project.PaketDirectory.Create()
 
-        let existingFiles = 
-            FindAllFiles(project.PaketDirectory.FullName,"*")
-        
-        let delete (f:FileInfo) =
-            if f.FullName.EndsWith(".meta") && installFiles |> Seq.exists (fun (Package.InstallFile(_,t)) -> FileInfo(f.FullName.Replace(".meta","")).Equals(t))
-                then ()
-                else do f.Delete()
-        
+        let removeNonMetaFiles d =
+            FindAllFiles(d,"*")
+            |> Seq.map MetaFile.Of
+            |> Seq.map (fun x -> printfn "no_metafile:%A" x
+                                 x)
+            |> Seq.iter (function NotAMetaFile f -> f.Delete() | _ -> ())
+
+        let removeDeadMetaFiles d =
+            FindAllFiles(d,"*.meta")
+            |> Seq.map MetaFile.Of
+            |> Seq.map (fun x -> printfn "dead_metafile:%A" x
+                                 x)
+            |> Seq.iter (function DeadMetafile f -> f.Delete() | _ -> ())
+
+        let rec removeDeadDirs (d:DirectoryInfo) =
+            for d' in d.GetDirectories() do removeDeadDirs d'
+            do removeDeadMetaFiles d.FullName
+            if d.EnumerateFileSystemInfos() |> Seq.isEmpty then d.Delete()    
+
         let install (Package.InstallFile((Package.PackageFile(p,r,f)),t)) =
             do t.Directory.Create()
             if t.Exists then do t.Delete()
             do f.CopyTo(t.FullName) |> ignore    
 
-        existingFiles
-        |> Seq.iter delete       
+        do removeNonMetaFiles project.PaketDirectory.FullName
         
         installFiles
         |> Seq.iter install
+
+        do removeDeadDirs project.PaketDirectory
 
 /// Installs all packages from the lock file.
 let Install(sources, options : InstallerOptions, lockFile : LockFile) =
