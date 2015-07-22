@@ -14,9 +14,10 @@ module Path =
     let Relative (root:string) other =
         let sep = Path.DirectorySeparatorChar.ToString()
         let r' = if root.EndsWith(sep) then root else root + sep
-        createRelativePath r' other
+        let ret = (createRelativePath r' other).Replace('\\',Path.DirectorySeparatorChar)
+        ret
 
-[<RequireQualifiedAccessAttribute>]
+[<RequireQualifiedAccess>]
 module private Package =
 
     [<StructuredFormatDisplay("PackageFile({package},{relative},{file})")>]
@@ -61,7 +62,13 @@ module private Package =
 
     let InstallFiles root package model (project:Project) =
         Files root package model
-        |> Seq.map (fun (PackageFile(p,r,f)) -> InstallFile(PackageFile(p,r,f),Path.Combine(project.DirectorForPackage(p),r)|>FileInfo))
+        |> Seq.map (fun p ->
+            let t = 
+                match p with
+                | PackageFile(_,r,_) when r.StartsWith("Plugins") -> FileInfo(r)
+                | PackageFile(p,r,_) -> Path.Combine(project.DirectorForPackage(p),r)|>FileInfo
+            InstallFile(p,t)
+            )
     
 let CreateInstallModel(root, sources, force, package) =
     async {
@@ -158,8 +165,6 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
             usedPackages 
             |> Seq.collect (fun x -> Package.InstallFiles root x.Key model project)
         
-        printfn "installFiles:%A" (installFiles |> Seq.toList)
-        
         do project.PaketDirectory.Create()
 
         let existingFiles = 
@@ -172,89 +177,18 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
         
         let install (Package.InstallFile((Package.PackageFile(p,r,f)),t)) =
             do t.Directory.Create()
+            if t.Exists then do t.Delete()
             do f.CopyTo(t.FullName) |> ignore    
 
         existingFiles
         |> Seq.iter delete       
         
         installFiles
-        |> Seq.iter install        
-
-//        usedPackages
-//        |> Seq.map (fun u -> u.Key)
-//        |> Seq.map (fun p -> p,model.TryFind (NormalizedPackageName p))
-//        |> Seq.choose (function | n,Some(m) -> Some(n,m) | _ -> None)
-//        |> Seq.map (fun (n,m) -> n,m.GetLibReferences(Constants.Unity3DDotNetCompatibiliy))
-//        |> Seq.iter (fun (n,m) -> addFilesToInstall {package=n;files=libraryFilesToInstall m} )
-//        
-//        usedPackages
-//        |> Seq.map (fun kv -> kv.Key,findContentForPackage(root,kv.Key))
-//        |> Seq.choose (function n,Some(c) -> Some(n,FindAllFiles(c.FullName,"*") |> Seq.ofArray |> contentFilesToInstall n) | _ -> None)
-//        |> Seq.iter (fun (p,fs) -> addFilesToInstall {package=p;files=fs})
-//        
-//        do System.IO.Directory.CreateDirectory project.PaketDirectory.FullName |> ignore
-//
-//        let inline (+/) x y = Path.Combine(x,y)
-//
-//        let rec existingPackageFiles p pd (d:DirectoryInfo) =
-//            seq {for f in d.GetFiles() do yield p,relativePath pd f.FullName
-//                 for d' in d.GetDirectories() do yield! existingPackageFiles p pd d'}
-//
-//        let existingFiles =
-//            seq { for d in project.PaketDirectory.GetDirectories() do 
-//                    yield! existingPackageFiles (PackageName(d.Name)) (d.FullName+Path.DirectorySeparatorChar.ToString()) d}
-//        
-//        let willInstallFile (p:PackageName) (r:string) =
-//            Map.exists (fun p' fs -> p'=p && Set.exists (function | Library(_,r) -> r=r | File(_,r) -> r=r) fs.files) !filesToInstall  
-//
-//        let isPlugin (s:string) =
-//            Constants.PluginDirs |> Seq.exists s.StartsWith
-//
-//        let safeDelete (p:PackageName) (r:string) =
-//            let f = (project.DirectorForPackage p) +/ r
-//            if f.EndsWith(".meta") && willInstallFile p (r.Replace(".meta", "")) 
-//                then () 
-//                else do File.Delete(f)
-//        
-//        for p,f in existingFiles 
-//            do safeDelete p f
-//            
-//        let install (p:PackageName) (f:FileToInstall) =
-//            let source,target = 
-//                match f with 
-//                | Library(s,r) -> s,project.DirectorForPackage p +/ r
-//                | File(s,r) when isPlugin r -> s,project.Assets.FullName +/ r
-//                | File(s,r) -> s,project.DirectorForPackage p +/ r
-//            do System.IO.Directory.CreateDirectory <| FileInfo(target).DirectoryName |> ignore
-//            if File.Exists(target) 
-//                then do File.Delete(target)
-//            if not (FileInfo(target).Directory.Exists)
-//                then do Directory.CreateDirectory(FileInfo(target).DirectoryName) |> ignore
-//            do File.Copy(source,FileInfo(target).FullName)
-//
-//        let rec allDirs (d:DirectoryInfo) =
-//            seq { for d' in d.GetDirectories() do yield! allDirs d' }
-//        
-//        for pfs in !filesToInstall do
-//            let p = pfs.Key
-//            let fs = pfs.Value
-//            for f in fs.files do install p f     
-//
-//        for d in project.PaketDirectory.GetDirectories("*",SearchOption.AllDirectories) |> Array.rev do
-//            if d.GetDirectories().Length + d.GetFiles().Length = 0 then
-//                for f in d.Parent.GetFiles(d.Name+".meta")
-//                    do f.Delete()
-//                do d.Delete()
-
-        ()
+        |> Seq.iter install
 
 /// Installs all packages from the lock file.
 let Install(sources, options : InstallerOptions, lockFile : LockFile) =
     let root = FileInfo(lockFile.FileName).Directory.FullName
-    printfn "lockFile:%A" lockFile
-    printfn "root:%A" root
-
     let projects = Paket.Unity3D.ReferencesFile.FindAllReferencesFiles root
                    |> Seq.map returnOrFail
-    printfn "projects:%A" projects
     InstallIntoProjects(sources, options, lockFile, projects)
