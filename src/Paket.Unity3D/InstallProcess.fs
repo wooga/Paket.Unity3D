@@ -39,28 +39,38 @@ module private Package =
         |> Array.append (folder.GetDirectories("content"))
         |> Array.tryFind (fun _ -> true)
 
-    let ContentFiles root package =
-        match ContentDir root package with
-        | Some(contents) ->
-            FindAllFiles(contents.FullName,"*")
-            |> Array.map (fun f -> PackageFile(package,Path.Relative contents.FullName f.FullName, FileInfo(f.FullName)))
-            |> Seq.ofArray
-        | _ -> Seq.empty     
+    let ContentFiles root package (settings:PackageInstallSettings option) =
+        printfn "settings:%A" settings 
+        match settings with
+        | Some(s) when s.Settings.OmitContent.IsSome && s.Settings.OmitContent.Value -> Seq.empty
+        | _ -> 
+            match ContentDir root package with
+            | Some(contents) ->
+                FindAllFiles(contents.FullName,"*")
+                |> Array.map (fun f -> PackageFile(package,Path.Relative contents.FullName f.FullName, FileInfo(f.FullName)))
+                |> Seq.ofArray
+            | _ -> Seq.empty     
 
-    let LibraryFiles package (model:Map<NormalizedPackageName,InstallModel>) =
+    let LibraryFiles package (model:Map<NormalizedPackageName,InstallModel>) (settings:PackageInstallSettings option) =
+        let fwrs =
+            match settings with
+            | Some(s) -> s.Settings.FrameworkRestrictions
+            | _ -> Constants.Unity3DFrameworkRestrictions
+        
         match model.TryFind (NormalizedPackageName package) with
         | Some(m) -> 
-            m.GetLibReferences(Constants.Unity3DDotNetCompatibiliy)
+            m.ApplyFrameworkRestrictions(fwrs)
+             .GetLibReferences(Constants.Unity3DDotNetCompatibiliy)
             |> Seq.map (fun f -> PackageFile(package,FileInfo(f).Name,FileInfo(f)))
         | _ -> Seq.empty
 
-    let Files root package model =
+    let Files root package (settings:PackageInstallSettings option) model =
         Seq.append
-        <| LibraryFiles package model
-        <| ContentFiles root package
+        <| LibraryFiles package model settings
+        <| ContentFiles root package settings
 
-    let InstallFiles root package model (project:Project) =
-        Files root package model
+    let InstallFiles root (settings:Map<NormalizedPackageName,PackageInstallSettings>) package model (project:Project) =
+        Files root package (settings.TryFind (NormalizedPackageName package)) model
         |> Seq.map (fun p ->
             
             let t = 
@@ -159,6 +169,15 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
             |> lockFile.GetPackageHull
             |> Seq.map (fun p -> NormalizedPackageName p.Key))
         |> Seq.concat
+    
+    let settings =
+        projects
+        |> Seq.map (fun proj ->
+            proj.References
+            |> lockFile.GetPackageHull
+            |> Seq.map (fun p -> NormalizedPackageName p.Key,p.Value))
+        |> Seq.concat
+        |> Map.ofSeq
 
     let root = Path.GetDirectoryName lockFile.FileName
     let extractedPackages = createModel(root, sources, options.Force, lockFile, Set.ofSeq packagesToInstall)
@@ -183,7 +202,7 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
 
         let installFiles = 
             usedPackages 
-            |> Seq.collect (fun x -> Package.InstallFiles root x.Key model project)
+            |> Seq.collect (fun x -> Package.InstallFiles root settings x.Key model project)
         
         do project.PaketDirectory.Create()
 
