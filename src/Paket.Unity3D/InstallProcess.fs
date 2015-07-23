@@ -62,10 +62,15 @@ module private Package =
     let InstallFiles root package model (project:Project) =
         Files root package model
         |> Seq.map (fun p ->
+            
             let t = 
                 match p with
-                | PackageFile(_,r,_) when r.StartsWith("Plugins") -> FileInfo(r)
-                | PackageFile(p,r,_) -> Path.Combine(project.DirectorForPackage(p),r)|>FileInfo
+                | PackageFile(_,r,_) when r.StartsWith("Plugins") -> 
+                    let pp = Path.Combine(project.Assets.FullName,r)
+                    printfn "plugins:%A" pp
+                    pp
+                | PackageFile(p,r,_) -> Path.Combine(project.DirectorForPackage(p),r)
+                |>FileInfo
             InstallFile(p,t)
             )
     
@@ -169,10 +174,13 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
         |> Map.ofArray
 
     for project in projects do
-        verbosefn "Installing to %s" project.Name
+        printfn "Installing to %s" project.Name
         
         let usedPackages = UsedPackages lockFile packages project
         
+        usedPackages
+        |> Seq.iter (fun p -> let (PackageName n) = p.Key in printfn "- %s" n)
+
         let installFiles = 
             usedPackages 
             |> Seq.collect (fun x -> Package.InstallFiles root x.Key model project)
@@ -182,15 +190,11 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
         let removeNonMetaFiles d =
             FindAllFiles(d,"*")
             |> Seq.map MetaFile.Of
-            |> Seq.map (fun x -> printfn "no_metafile:%A" x
-                                 x)
             |> Seq.iter (function NotAMetaFile f -> f.Delete() | _ -> ())
 
         let removeDeadMetaFiles d =
             FindAllFiles(d,"*.meta")
             |> Seq.map MetaFile.Of
-            |> Seq.map (fun x -> printfn "dead_metafile:%A" x
-                                 x)
             |> Seq.iter (function DeadMetafile f -> f.Delete() | _ -> ())
 
         let rec removeDeadDirs (d:DirectoryInfo) =
