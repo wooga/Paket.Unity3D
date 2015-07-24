@@ -3,7 +3,6 @@ module Paket.Unity3D.AddProcess
 
 open Paket
 open System.IO
-open Paket.Domain
 open Paket.Unity3D
 
 let private add (project:DirectoryInfo) package =

@@ -1,3 +1,8 @@
+#### 0.2.0 - July 24 2015
+* Supports DLL packages (uses `net35` for Unity3D projects)
+* Allows for omit-content and framework restrictions in paket.references file
+* Does not delete .meta files unless they are really removed
+
 #### 0.1.0 - April 14 2015
 * Adds `PAKET.UNITY3D.VERSION` environment veriable to request a specific version via the paket.unity3d.bootstrapper.exe
 
@@ -5,7 +10,7 @@
 * Add command installs automatically when single project is found and displays a warning when multiple projects are found but interactive command is not given
 
 #### 0.0.12 - February 26 2015
-* Implements Add command
+* Implements Add commands
 
 #### 0.0.11 - February 26 2015
 * Removes debug information from bootstrapper

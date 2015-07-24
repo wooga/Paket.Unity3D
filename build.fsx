@@ -159,7 +159,7 @@ Target "MergeExe" (fun _ ->
     CreateDir buildMergedDir
 
     let toPack =
-        ["paket.unity3d.exe"; "Paket.Core.dll"; "FSharp.Core.dll"; "Ionic.Zip.dll"; "Newtonsoft.Json.dll"; "UnionArgParser.dll";]
+        ["paket.unity3d.exe"; "Paket.Core.dll"; "FSharp.Core.dll"; "Newtonsoft.Json.dll"; "UnionArgParser.dll";]
         |> List.map (fun l -> buildDir @@ l)
         |> separated " "
 
@@ -329,11 +329,11 @@ Target "All" DoNothing
 "Clean"
   ==> "AssemblyInfo"
   ==> "Build"
-  ==> "RunTests"
-  //=?> ("GenerateReferenceDocs",isLocalBuild && not isMono)
-  //=?> ("GenerateDocs",isLocalBuild && not isMono)
+//  ==> "RunTests"
+//  =?> ("GenerateReferenceDocs",isLocalBuild && not isMono)
+//  =?> ("GenerateDocs",isLocalBuild && not isMono)
   ==> "All"
-  //=?> ("ReleaseDocs",isLocalBuild && not isMono)
+//  =?> ("ReleaseDocs",isLocalBuild && not isMono)
 
 "All"
 #if MONO
@@ -344,9 +344,9 @@ Target "All" DoNothing
   ==> "NuGet"
   ==> "BuildPackage"
 
-"NuGet->Tool"
-  ==> "NuGet->Example"
-  ==> "NuGet"
+//"NuGet->Tool"
+//  ==> "NuGet->Example"
+//  ==> "NuGet"
 
 "CleanDocs"
   ==> "GenerateHelp"
