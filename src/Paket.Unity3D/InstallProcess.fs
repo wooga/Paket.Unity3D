@@ -40,25 +40,25 @@ module private Package =
         |> Array.tryFind (fun _ -> true)
 
     let ContentFiles root package (settings:PackageInstallSettings option) =
-        printfn "settings:%A" settings 
+        //printfn "settings:%A" settings
         match settings with
         | Some(s) when s.Settings.OmitContent.IsSome && s.Settings.OmitContent.Value -> Seq.empty
-        | _ -> 
+        | _ ->
             match ContentDir root package with
             | Some(contents) ->
                 FindAllFiles(contents.FullName,"*")
                 |> Array.map (fun f -> PackageFile(package,Path.Relative contents.FullName f.FullName, FileInfo(f.FullName)))
                 |> Seq.ofArray
-            | _ -> Seq.empty     
+            | _ -> Seq.empty
 
     let LibraryFiles package (model:Map<NormalizedPackageName,InstallModel>) (settings:PackageInstallSettings option) =
         let fwrs =
             match settings with
             | Some(s) -> s.Settings.FrameworkRestrictions
             | _ -> Constants.Unity3DFrameworkRestrictions
-        
+
         match model.TryFind (NormalizedPackageName package) with
-        | Some(m) -> 
+        | Some(m) ->
             m.ApplyFrameworkRestrictions(fwrs)
              .GetLibReferences(Constants.Unity3DDotNetCompatibiliy)
             |> Seq.map (fun f -> PackageFile(package,FileInfo(f).Name,FileInfo(f)))
@@ -72,18 +72,18 @@ module private Package =
     let InstallFiles root (settings:Map<NormalizedPackageName,PackageInstallSettings>) package model (project:Project) =
         Files root package (settings.TryFind (NormalizedPackageName package)) model
         |> Seq.map (fun p ->
-            
-            let t = 
+
+            let t =
                 match p with
-                | PackageFile(_,r,_) when r.StartsWith("Plugins") -> 
+                | PackageFile(_,r,_) when r.StartsWith("Plugins") ->
                     let pp = Path.Combine(project.Assets.FullName,r)
-                    printfn "plugins:%A" pp
+                    //printfn "plugins:%A" pp
                     pp
                 | PackageFile(p,r,_) -> Path.Combine(project.DirectorForPackage(p),r)
                 |>FileInfo
             InstallFile(p,t)
             )
-    
+
 let CreateInstallModel(root, sources, force, package) =
     async {
         let! (package, files, targetsFiles) = RestoreProcess.ExtractPackage(root, sources, force, package)
@@ -115,7 +115,7 @@ let UsedPackages (lockFile:LockFile) (packages:Map<NormalizedPackageName,Resolve
     let usedPackages =
         project.References.NugetPackages
         |> Seq.map (fun ps ->
-            let package = 
+            let package =
                 match packages |> Map.tryFind (NormalizedPackageName ps.Name) with
                 | Some p -> p
                 | None -> failwithf "%s uses NuGet package %O, but it was not found in the paket.lock file." project.References.FileName ps.Name
@@ -128,15 +128,15 @@ let UsedPackages (lockFile:LockFile) (packages:Map<NormalizedPackageName,Resolve
     let usedPackages =
         let d = ref usedPackages
 
-        /// we want to treat the settings from the references file through the computation so that it can be used as the base that 
+        /// we want to treat the settings from the references file through the computation so that it can be used as the base that
         /// the other settings modify.  in this way we ensure that references files can override the dependencies file, which in turn overrides the lockfile.
-        let usedPackageDependencies = 
-            usedPackages 
+        let usedPackageDependencies =
+            usedPackages
             |> Seq.collect (fun u -> lookup.[NormalizedPackageName u.Key] |> Seq.map (fun i -> u.Value, i))
-            |> Seq.choose (fun (parentSettings, dep) -> 
+            |> Seq.choose (fun (parentSettings, dep) ->
                 match packages |> Map.tryFind (NormalizedPackageName dep) with
                 | None -> None
-                | Some p -> 
+                | Some p ->
                     let resolvedSettings = [lockFile.Options.Settings; p.Settings] |> List.fold (+) parentSettings
                     Some (p.Name, resolvedSettings) )
 
@@ -145,15 +145,15 @@ let UsedPackages (lockFile:LockFile) (packages:Map<NormalizedPackageName,Resolve
                 d := Map.add name settings !d
 
         !d
-    usedPackages    
+    usedPackages
 
 type MetaFile =
     | FileMetaFile of file:FileInfo * metaFile:FileInfo
     | DirectoryMetaFile of dir:DirectoryInfo * metaFile:FileInfo
     | DeadMetafile of metaFile:FileInfo
     | NotAMetaFile of file:FileInfo
-    with 
-        static member Of(f:FileInfo) = 
+    with
+        static member Of(f:FileInfo) =
             match f.FullName.Replace(".meta","") with
             | _ when not <| f.FullName.EndsWith(".meta") -> NotAMetaFile f
             | t when File.Exists(t) -> FileMetaFile(FileInfo t,f)
@@ -169,7 +169,7 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
             |> lockFile.GetPackageHull
             |> Seq.map (fun p -> NormalizedPackageName p.Key))
         |> Seq.concat
-    
+
     let settings =
         projects
         |> Seq.map (fun proj ->
@@ -181,7 +181,7 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
 
     let root = Path.GetDirectoryName lockFile.FileName
     let extractedPackages = createModel(root, sources, options.Force, lockFile, Set.ofSeq packagesToInstall)
-    
+
     let model =
         extractedPackages
         |> Array.map (fun (p,m) -> NormalizedPackageName p.Name,m)
@@ -194,16 +194,16 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
 
     for project in projects do
         printfn "Installing to %s" project.Name
-        
+
         let usedPackages = UsedPackages lockFile packages project
-        
+
         usedPackages
         |> Seq.iter (fun p -> let (PackageName n) = p.Key in printfn "- %s" n)
 
-        let installFiles = 
-            usedPackages 
+        let installFiles =
+            usedPackages
             |> Seq.collect (fun x -> Package.InstallFiles root settings x.Key model project)
-        
+
         do project.PaketDirectory.Create()
 
         let removeNonMetaFiles d =
@@ -219,15 +219,15 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
         let rec removeDeadDirs (d:DirectoryInfo) =
             for d' in d.GetDirectories() do removeDeadDirs d'
             do removeDeadMetaFiles d.FullName
-            if d.EnumerateFileSystemInfos() |> Seq.isEmpty then d.Delete()    
+            if d.EnumerateFileSystemInfos() |> Seq.isEmpty then d.Delete()
 
         let install (Package.InstallFile((Package.PackageFile(p,r,f)),t)) =
             do t.Directory.Create()
             if t.Exists then do t.Delete()
-            do f.CopyTo(t.FullName) |> ignore    
+            do f.CopyTo(t.FullName) |> ignore
 
         do removeNonMetaFiles project.PaketDirectory.FullName
-        
+
         installFiles
         |> Seq.iter install
 

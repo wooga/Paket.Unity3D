@@ -1,3 +1,6 @@
+#### 0.2.1 - July 24 2015
+* Removes debug logs
+
 #### 0.2.0 - July 24 2015
 * Supports DLL packages (uses `net35` for Unity3D projects)
 * Allows for omit-content and framework restrictions in paket.references file
