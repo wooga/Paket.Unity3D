@@ -26,8 +26,8 @@ Furthermore Paket.Unity3D works on the command-line and can be integrate into th
 
 |  |  BuildScript | Status of last build |
 | :------ | :------: | :------: |
-| **Mono** | [build.sh](https://github.com/devboy/Paket.Unity3D/blob/master/build.sh) | [![Travis build status](https://travis-ci.org/devboy/Paket.Unity3D.png)](https://travis-ci.org/devboy/Paket.Unity3D) |
-| **Windows** | [build.cmd](https://github.com/devboy/Paket.Unity3D/blob/master/build.cmd) | [![Appveyor build status](https://ci.appveyor.com/api/projects/status/pbu35ledt76viqmj/branch/master?svg=true)](https://ci.appveyor.com/project/devboy/paket-unity3d/branch/master)
+| **Mono** | [build.sh](https://github.com//Paket.Unity3D/blob/master/build.sh) | [![Travis build status](https://travis-ci.org/wooga/Paket.Unity3D.png)](https://travis-ci.org/wooga/Paket.Unity3D) |
+| **Windows** | [build.cmd](https://github.com/wooga/Paket.Unity3D/blob/master/build.cmd) | [![Appveyor build status](https://ci.appveyor.com/api/projects/status/pbu35ledt76viqmj/branch/master?svg=true)](https://ci.appveyor.com/project/wooga/paket-unity3d/branch/master)
 
 ## Quick contributing guide
 
@@ -43,11 +43,11 @@ If you want to contribute to the [docs][2] then please modify the markdown files
 
 The [MIT license][6]
 
- [1]: https://github.com/devboy/Paket.Unity3D/
- [2]: http://devboy.github.io/Paket.Unity3D/
- [3]: https://github.com/devboy/Paket.Unity3D/releases/latest
- [4]: https://github.com/devboy/Paket.Unity3D/issues
- [6]: https://github.com/devboy/Paket.Unity3D/blob/master/LICENSE.txt
+ [1]: https://github.com/wooga/Paket.Unity3D/
+ [2]: http://wooga.github.io/Paket.Unity3D/
+ [3]: https://github.com/wooga/Paket.Unity3D/releases/latest
+ [4]: https://github.com/wooga/Paket.Unity3D/issues
+ [6]: https://github.com/wooga/Paket.Unity3D/blob/master/LICENSE.txt
  [11]: http://fsprojects.github.io/Paket
  [12]: http://unity3d.com/
  [13]: http://www.nuget.org
