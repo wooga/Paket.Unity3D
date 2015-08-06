@@ -1,3 +1,6 @@
+#### 0.2.2 - July 24 2015
+* Enables trace-logs and adds --verbose argument
+
 #### 0.2.1 - July 24 2015
 * Removes debug logs
 

@@ -193,12 +193,12 @@ let InstallIntoProjects(sources, options : InstallerOptions, lockFile : LockFile
         |> Map.ofArray
 
     for project in projects do
-        printfn "Installing to %s" project.Name
+        tracefn "Installing to %s" project.Name
 
         let usedPackages = UsedPackages lockFile packages project
 
         usedPackages
-        |> Seq.iter (fun p -> let (PackageName n) = p.Key in printfn "- %s" n)
+        |> Seq.iter (fun p -> let (PackageName n) = p.Key in tracefn "- %s" n)
 
         let installFiles =
             usedPackages

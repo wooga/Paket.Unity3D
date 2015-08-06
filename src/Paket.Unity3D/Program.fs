@@ -11,7 +11,12 @@ open Nessos.UnionArgParser
 
 let assembly = Assembly.GetExecutingAssembly()
 let fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
-tracefn "Paket.Unity3D version %s" fvi.FileVersion
+
+Logging.event.Publish 
+|> Observable.subscribe Logging.traceToConsole
+|> ignore
+
+Logging.tracefn "Paket.Unity3D version %s" fvi.FileVersion
 
 type Command =
     | [<First>][<CustomCommandLine("install")>] Install
@@ -22,6 +27,7 @@ with
 and AddArgs =
     | [<First>][<CustomCommandLine("nuget")>][<Mandatory>] Nuget of string
     | [<CustomCommandLine("version")>] Version of string
+    | [<AltCommandLine("-v")>] Verbose
     | [<AltCommandLine("-f")>] Force
     | [<AltCommandLine("-i")>] Interactive
     | Hard // --hard
@@ -52,7 +58,9 @@ let (|Command|_|) args =
 let args = Environment.GetCommandLineArgs().[1..]
 try
     match args with
-        | Command(Install, rest) -> 
+        | Command(Install, rest) ->
+            let results = commandArgs<AddArgs> rest 
+            Paket.Logging.verbose <- results.Contains <@ AddArgs.Verbose @>
             let deps = Dependencies.Locate().DependenciesFile |> DependenciesFile.ReadFromFile
             let lock = deps.FindLockfile().FullName |> LockFile.LoadFrom
             let sources = deps.GetAllPackageSources()
@@ -60,7 +68,7 @@ try
         | Command(Add, rest) -> 
             let results = commandArgs<AddArgs> rest
             let nuget = results.GetResult <@ AddArgs.Nuget @>
-
+            Paket.Logging.verbose <- results.Contains <@ AddArgs.Verbose @>
             let packageName = results.GetResult <@ AddArgs.Nuget @>
             let version = defaultArg (results.TryGetResult <@ AddArgs.Version @>) ""
             let force = results.Contains <@ AddArgs.Force @>
