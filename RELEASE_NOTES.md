@@ -1,3 +1,6 @@
+#### 0.2.3 - August 8 2015
+* Test
+
 #### 0.2.2 - July 24 2015
 * Enables trace-logs and adds --verbose argument
 
