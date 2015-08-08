@@ -1,60 +1,96 @@
 # Quick start guide
 
-This guide will focus on Paket.Unity3D and you will need a `.paket` directory containing a recent version of [paket.exe][paket.exe] at the root of your project directory structure.
-Please also have a look at the documentation of [Paket][paket].
+This guide will show you how to use **Paket.Unity3D** and make NuGet dependencies available in your Unity3D project.
 
-## paket.dependencies
+## Unity3D project
 
-If no `paket.dependencies` file is present in the root of your project you can create one as follows:
+Given a Unity3D project named `YourAwesomeGame` with the following directory structure:
 
-		[lang=batchfile]
-		[mono] .paket/paket.exe init
+	[lang=batchfile]
+	.
+	└── YourAwesomeGame
+	    ├── Assets
+	    ├── Library
+	    ├── ProjectSettings
+	    └── Temp
 
-First you need to add Paket.Unity3D as a dependency. So ensure that the following `source` and `nuget` dependency are present in `paket.dependencies`:
+## Installation
 
-		source https://nuget.org/api/v2
-		nuget Paket.Unity3D
+You will need to install both **Paket** and **Paket.Unity3D**. The simplest way is to create a `.paket` directory next to your `Assets` directory and download the bootstrapper executables.
 
-Proceed by installing Paket.Unity3D:
+`paket.bootstrapper.exe` can be found at [Paket releases](https://github.com/fsprojects/Paket/releases/latest)
 
-		[lang=batchfile]
-		[mono] .paket.exe update
+`paket.unity3d.bootstrapper.exe` can be found at [Paket.Unity3D releases](https://github.com/wooga/Paket.Unity3D/releases/latest)
 
-`paket.unity3d.exe` should now be present under `./packages/Paket.Unity3D/tools/`
+Once you've got both files in your `.paket` directory, fire up a shell and run both bootstrappers:
 
-For more info on `paket.dependencies` check the [Paket documentation][paket.dependencies]
+	[lang=batchfile]
+	$ [mono] .paket/paket.bootstrapper.exe
+	$ [mono] .paket/paket.unity3d.bootstrapper.exe
 
-## paket.unity3d.references
+This will download the latest executables of **Paket** and **Paket.Unity3D** into your `.paket` directory.
 
-Then add a `paket.unity3d.references` file next to the `Assets` directory of your Unity3D project.
+## Initialization
 
-Declare your dependencies, for example:
+You will have to create a file called `paket.dependencies` with the following content:
 
-In `paket.dependencies`:
+	[lang=batchfile]
+	source https://nuget.org/api/v2
 
-    nuget Paket.Unity3D.Example.Source
+[More on paket.dependencies](http://fsprojects.github.io/Paket/dependencies-file.html)
 
-In `paket.unity3d.references`:
+## Adding a nuget dependency
 
-		Paket.Unity3D.Example.Source
+To add a NuGet dependency, `Wooga.Lambda` is used as an example here, append the following to your `paket.dependencies` file:
 
-`paket.unity3d.references` is the same as a `paket.references` file. For more info on `paket.dependencies` check the [Paket documentation][paket.references]
+	[lang=batchfile]
+	nuget Wooga.Lambda
 
-## Update and install
+[More on NuGet dependencies](http://fsprojects.github.io/Paket/nuget-dependencies.html)
 
-Update your dependencies with [Paket][paket]
+## Downloading the dependency
 
-    [lang=batchfile]
-    $ [mono] .paket/paket.exe update
+To actually download `Wooga.Lambda` you'll need to run:
 
-Install the references into the Unity3D project
+	[lang=batchfile]
+	$ [mono] .paket/paket.exe update
 
-    [lang=batchfile]
-    $ [mono] packages/Paket.Unity3D/tools/paket.unity3d.exe
+[More on paket update](http://fsprojects.github.io/Paket/paket-update.html)
 
-Your dependencies should now be added to the Assets directory.
+## Referencing the dependency
 
-[paket.dependencies]: http://fsprojects.github.io/Paket/dependencies-file.html
-[paket.references]: http://fsprojects.github.io/Paket/references-files.html
-[paket]: http://fsprojects.github.io/Paket/
-[paket.exe]: https://github.com/fsprojects/Paket/releases/latest
+You will have to create a file called `paket.unity3d.references` next to your `Assets` directory with the following content:
+
+	[lang=batchfile]
+	Wooga.Lambda
+
+[More on paket.unity3d.references](http://wooga.github.io/Paket.Unity3D/references-files.html)
+
+## Installing the dependency
+
+Once the dependency is downloaded you will want to actually add it to your Unity3D project by running:
+
+	[lang=batchfile]
+	$ [mono] .paket/paket.unity3d.exe install
+
+Your project directory should now look like this:
+
+	[lang=batchfile]
+	.
+	└── YourAwesomeGame
+	├── Assets
+	│   └── Paket.Unity3D
+	│       └── Wooga.Lambda
+	│           └── Wooga.Lambda.dll
+	├── Library
+	│   └── [...]
+	├── ProjectSettings
+	│   └── [...]
+	├── Temp
+	│   └── [...]
+	├── packages
+	│   └── Wooga.Lambda
+	│       └── [...]
+	├── paket.dependencies
+	├── paket.lock
+	└── paket.unity3d.references

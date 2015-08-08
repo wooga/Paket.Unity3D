@@ -1,18 +1,22 @@
-# What is Paket.Unity3D?
+# Paket.Unity3D
 
 An extension for the [Paket][paket] dependency manager that enables the integration of NuGet dependencies into [Unity3D][unity] projects.
 
 [paket]: http://fsprojects.github.io/Paket/
 [unity]: https://www.unity3d.com/
 
+## Features
+
+  * NuGet dependencies
+  * Dependencies as DLL or source-files
+  * Plugin & native code support
+  * [based on Paket](https://github.com/fsprojects/Paket)
+
 ## How to get Paket.Unity3D
 
-Paket.Unity3D is available as:
+Download the latest Paket.Unity3D executable from:
 
-  * [download from GitHub.com](https://github.com/devboy/Paket.Unity3D/releases/latest)
-  * as a package [`Paket` on nuget.org](https://www.nuget.org/packages/Paket.Unity3D/)
-
-[![NuGet Status](http://img.shields.io/nuget/v/Paket.Unity3D.svg?style=flat)](https://www.nuget.org/packages/Paket.Unity3D/)
+  * [GitHub](https://github.com/devboy/Paket.Unity3D/releases/latest)
 
 ## Prerequisites
 
@@ -20,9 +24,9 @@ Paket.Unity3D is available as:
 
 You’ll need [.NET Framework 4.0](http://www.microsoft.com/en-us/download/details.aspx?id=17851)
 
-### *Nix
+### Unix/Linux
 
-You’ll need [Mono MRE 3.10](http://www.mono-project.com/download/)
+You’ll need [Mono MRE 4.0.2](http://www.mono-project.com/download/)
 
 ## Getting Started
 

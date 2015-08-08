@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B98-5CED-492C-A5B7-A5B4F73CF142}"
 	ProjectSection(SolutionItems) = preProject
@@ -9,8 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".paket", ".paket", "{63297B
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}"
-EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Paket.Unity3D", "src\Paket.Unity3D\Paket.Unity3D.fsproj", "{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "project", "project", "{BF60BC93-E09B-4E5F-9D85-95A519479D54}"
 	ProjectSection(SolutionItems) = preProject
@@ -28,15 +26,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tools", "tools", "{83F16175
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "content", "content", "{8E6D5255-776D-4B61-85F9-73C37AA1FB9A}"
 	ProjectSection(SolutionItems) = preProject
-		docs\content\index.fsx = docs\content\index.fsx
-		docs\content\tutorial.fsx = docs\content\tutorial.fsx
+		docs\content\index.md = docs\content\index.md
+		docs\content\references-files.md = docs\content\references-files.md
+		docs\content\source-dependencies.md = docs\content\source-dependencies.md
+		docs\content\tutorial.md = docs\content\tutorial.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{ED8079DD-2B06-4030-9F0F-DC548F98E1C4}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Paket.Unity3D.Tests", "tests\Paket.Unity3D.Tests\Paket.Unity3D.Tests.fsproj", "{E789C72A-5CFD-436B-8EF1-61AA2852A89F}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Paket.Unity3D.Bootstrapper", "src\Paket.Unity3D.Bootstrapper\Paket.Unity3D.Bootstrapper.csproj", "{F16F5B64-62DA-4BEC-9783-1EFDF002E6A8}"
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Paket.Unity3D", "src\Paket.Unity3D\Paket.Unity3D.fsproj", "{DF7CBF7B-1381-4AB5-ACD7-7CAD1D178E68}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -44,18 +44,14 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7E90D6CE-A10B-4858-A5BC-41DF7250CBCA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F16F5B64-62DA-4BEC-9783-1EFDF002E6A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F16F5B64-62DA-4BEC-9783-1EFDF002E6A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F16F5B64-62DA-4BEC-9783-1EFDF002E6A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F16F5B64-62DA-4BEC-9783-1EFDF002E6A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DF7CBF7B-1381-4AB5-ACD7-7CAD1D178E68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF7CBF7B-1381-4AB5-ACD7-7CAD1D178E68}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF7CBF7B-1381-4AB5-ACD7-7CAD1D178E68}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF7CBF7B-1381-4AB5-ACD7-7CAD1D178E68}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -63,6 +59,5 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{83F16175-43B1-4C90-A1EE-8E351C33435D} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
 		{8E6D5255-776D-4B61-85F9-73C37AA1FB9A} = {A6A6AF7D-D6E3-442D-9B1E-58CC91879BE1}
-		{E789C72A-5CFD-436B-8EF1-61AA2852A89F} = {ED8079DD-2B06-4030-9F0F-DC548F98E1C4}
 	EndGlobalSection
 EndGlobal
