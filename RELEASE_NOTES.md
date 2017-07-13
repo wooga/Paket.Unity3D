@@ -1,3 +1,6 @@
+#### 0.3.0 - July 14 2017
+* Remove special copy directory for directories starting with `Plugins`
+
 #### 0.2.3 - August 8 2015
 * Test
 

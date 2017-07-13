@@ -75,10 +75,6 @@ module private Package =
 
             let t =
                 match p with
-                | PackageFile(_,r,_) when r.StartsWith("Plugins") ->
-                    let pp = Path.Combine(project.Assets.FullName,r)
-                    //printfn "plugins:%A" pp
-                    pp
                 | PackageFile(p,r,_) -> Path.Combine(project.DirectorForPackage(p),r)
                 |>FileInfo
             InstallFile(p,t)

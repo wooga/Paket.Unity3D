@@ -8,6 +8,6 @@ nuget FAKE
 nuget Octokit
 nuget SourceLink.Fake
 nuget Paket.Core == 1.19.7
-nuget UnionArgParser
+nuget UnionArgParser == 0.9.0
 
 github fsharp/FAKE modules/Octokit/Octokit.fsx
