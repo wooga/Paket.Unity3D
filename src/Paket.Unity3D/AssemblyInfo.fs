@@ -5,13 +5,13 @@ open System.Reflection
 [<assembly: AssemblyTitleAttribute("Paket.Unity3D")>]
 [<assembly: AssemblyProductAttribute("Paket.Unity3D")>]
 [<assembly: AssemblyDescriptionAttribute("Piggy-backs ontop of Paket to add dependencies to Unity3D projects")>]
-[<assembly: AssemblyVersionAttribute("0.2.3")>]
-[<assembly: AssemblyFileVersionAttribute("0.2.3")>]
+[<assembly: AssemblyVersionAttribute("0.3.0")>]
+[<assembly: AssemblyFileVersionAttribute("0.3.0")>]
 do ()
 
 module internal AssemblyVersionInformation =
     let [<Literal>] AssemblyTitle = "Paket.Unity3D"
     let [<Literal>] AssemblyProduct = "Paket.Unity3D"
     let [<Literal>] AssemblyDescription = "Piggy-backs ontop of Paket to add dependencies to Unity3D projects"
-    let [<Literal>] AssemblyVersion = "0.2.3"
-    let [<Literal>] AssemblyFileVersion = "0.2.3"
+    let [<Literal>] AssemblyVersion = "0.3.0"
+    let [<Literal>] AssemblyFileVersion = "0.3.0"

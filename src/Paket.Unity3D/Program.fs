@@ -10,7 +10,6 @@ open System
 open Nessos.UnionArgParser
 
 let assembly = Assembly.GetExecutingAssembly()
-let fvi = FileVersionInfo.GetVersionInfo(assembly.Location);
 
 Logging.event.Publish 
 |> Observable.subscribe Logging.traceToConsole
@@ -19,7 +18,7 @@ Logging.event.Publish
 type Command =
     | [<First>][<CustomCommandLine("install")>] Install
     | [<First>][<CustomCommandLine("add")>]     Add
-    | [<First>][<CustomCommandLine("version")>] VersionCmd
+    | [<First>][<CustomCommandLine("--version")>] VersionCmd
 with 
     interface IArgParserTemplate with
         member __.Usage = ""
@@ -58,7 +57,7 @@ let args = Environment.GetCommandLineArgs().[1..]
 try
     match args with
         | Command(Install, rest) ->
-            Logging.tracefn "Paket.Unity3D version %s" fvi.FileVersion
+            Logging.tracefn "Paket.Unity3D version %s" AssemblyVersionInformation.AssemblyVersion
             let results = commandArgs<AddArgs> rest 
             Paket.Logging.verbose <- results.Contains <@ AddArgs.Verbose @>
             let deps = Dependencies.Locate().DependenciesFile |> DependenciesFile.ReadFromFile
@@ -66,7 +65,7 @@ try
             let sources = deps.GetAllPackageSources()
             Paket.Unity3D.InstallProcess.Install(sources,InstallerOptions.Default,lock)
         | Command(Add, rest) ->
-            Logging.tracefn "Paket.Unity3D version %s" fvi.FileVersion
+            Logging.tracefn "Paket.Unity3D version %s" AssemblyVersionInformation.AssemblyVersion
             let results = commandArgs<AddArgs> rest
             let nuget = results.GetResult <@ AddArgs.Nuget @>
             Paket.Logging.verbose <- results.Contains <@ AddArgs.Verbose @>
@@ -80,7 +79,7 @@ try
             let dep = Dependencies.Locate()
             Paket.Unity3D.AddProcess.Add(dep.DependenciesFile, Paket.Domain.PackageName packageName, version, force, hard, interactive, noInstall |> not)
         | Command(VersionCmd, rest) ->
-            Logging.tracefn "%s" fvi.FileVersion
+            Logging.tracefn "%s" AssemblyVersionInformation.AssemblyVersion
         | _ -> failwith "Paket.Unity3D does not know that command"
 with
 | exn when not (exn :? System.NullReferenceException) -> 
