@@ -72,7 +72,7 @@ namespace Paket.Unity3D.Bootstrapper
                 {
                     using (var client = new WebClient())
                     {
-                        const string releasesUrl = "https://github.com/devboy/Paket.Unity3D/releases";
+                        const string releasesUrl = "https://github.com/wooga/Paket.Unity3D/releases";
 
                         client.Headers.Add("user-agent", "Paket.Unity3D.Bootstrapper");
                         client.UseDefaultCredentials = true;
@@ -95,7 +95,7 @@ namespace Paket.Unity3D.Bootstrapper
                 {
                     var url =
                         String.Format(
-                            "https://github.com/devboy/Paket.Unity3D/releases/download/{0}/paket.unity3d.exe",
+                            "https://github.com/wooga/Paket.Unity3D/releases/download/{0}/paket.unity3d.exe",
                             latestVersion);
 
                     Console.WriteLine("Starting download from {0}", url);
