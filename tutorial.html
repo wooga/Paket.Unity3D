@@ -34,13 +34,9 @@
         <div class="span9" id="main">
           
 <h1><a name="Quick-start-guide" class="anchor" href="#Quick-start-guide">Quick start guide</a></h1>
-
 <p>This guide will show you how to use <strong>Paket.Unity3D</strong> and make NuGet dependencies available in your Unity3D project.</p>
-
 <h2><a name="Unity3D-project" class="anchor" href="#Unity3D-project">Unity3D project</a></h2>
-
 <p>Given a Unity3D project named <code>YourAwesomeGame</code> with the following directory structure:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 <span class="l">3: </span>
@@ -55,81 +51,53 @@
     ├── ProjectSettings
     └── Temp
 </code></pre></td></tr></table>
-
 <h2><a name="Installation" class="anchor" href="#Installation">Installation</a></h2>
-
 <p>You will need to install both <strong>Paket</strong> and <strong>Paket.Unity3D</strong>. The simplest way is to create a <code>.paket</code> directory next to your <code>Assets</code> directory and download the bootstrapper executables.</p>
-
 <p><code>paket.bootstrapper.exe</code> can be found at <a href="https://github.com/fsprojects/Paket/releases/latest">Paket releases</a></p>
-
 <p><code>paket.unity3d.bootstrapper.exe</code> can be found at <a href="https://github.com/wooga/Paket.Unity3D/releases/latest">Paket.Unity3D releases</a></p>
-
 <p>Once you've got both files in your <code>.paket</code> directory, fire up a shell and run both bootstrappers:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 <span class="l">2: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="batchfile">$ [mono] .paket/paket.bootstrapper.exe
 $ [mono] .paket/paket.unity3d.bootstrapper.exe
 </code></pre></td></tr></table>
-
 <p>This will download the latest executables of <strong>Paket</strong> and <strong>Paket.Unity3D</strong> into your <code>.paket</code> directory.</p>
-
 <h2><a name="Initialization" class="anchor" href="#Initialization">Initialization</a></h2>
-
 <p>You will have to create a file called <code>paket.dependencies</code> with the following content:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="batchfile">source https://nuget.org/api/v2
 </code></pre></td></tr></table>
-
 <p><a href="http://fsprojects.github.io/Paket/dependencies-file.html">More on paket.dependencies</a></p>
-
 <h2><a name="Adding-a-nuget-dependency" class="anchor" href="#Adding-a-nuget-dependency">Adding a nuget dependency</a></h2>
-
 <p>To add a NuGet dependency, <code>Wooga.Lambda</code> is used as an example here, append the following to your <code>paket.dependencies</code> file:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="batchfile">nuget Wooga.Lambda
 </code></pre></td></tr></table>
-
 <p><a href="http://fsprojects.github.io/Paket/nuget-dependencies.html">More on NuGet dependencies</a></p>
-
 <h2><a name="Downloading-the-dependency" class="anchor" href="#Downloading-the-dependency">Downloading the dependency</a></h2>
-
 <p>To actually download <code>Wooga.Lambda</code> you'll need to run:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="batchfile">$ [mono] .paket/paket.exe update
 </code></pre></td></tr></table>
-
 <p><a href="http://fsprojects.github.io/Paket/paket-update.html">More on paket update</a></p>
-
 <h2><a name="Referencing-the-dependency" class="anchor" href="#Referencing-the-dependency">Referencing the dependency</a></h2>
-
 <p>You will have to create a file called <code>paket.unity3d.references</code> next to your <code>Assets</code> directory with the following content:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="batchfile">Wooga.Lambda
 </code></pre></td></tr></table>
-
 <p><a href="http://wooga.github.io/Paket.Unity3D/references-files.html">More on paket.unity3d.references</a></p>
-
 <h2><a name="Installing-the-dependency" class="anchor" href="#Installing-the-dependency">Installing the dependency</a></h2>
-
 <p>Once the dependency is downloaded you will want to actually add it to your Unity3D project by running:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l">1: </span>
 </pre></td>
 <td class="snippet"><pre class="fssnip"><code lang="batchfile">$ [mono] .paket/paket.unity3d.exe install
 </code></pre></td></tr></table>
-
 <p>Your project directory should now look like this:</p>
-
 <table class="pre"><tr><td class="lines"><pre class="fssnip"><span class="l"> 1: </span>
 <span class="l"> 2: </span>
 <span class="l"> 3: </span>
@@ -166,7 +134,8 @@ $ [mono] .paket/paket.unity3d.bootstrapper.exe
 │       └── [...]
 ├── paket.dependencies
 ├── paket.lock
-└── paket.unity3d.references</code></pre></td></tr></table>
+└── paket.unity3d.references
+</code></pre></td></tr></table>
 
 
         </div>
