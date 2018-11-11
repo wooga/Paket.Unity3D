@@ -41,7 +41,7 @@ If you want to contribute to the [docs][2] then please modify the markdown files
 
 ## License
 
-The [MIT license][6]
+The [Unlicense][6]
 
  [1]: https://github.com/wooga/Paket.Unity3D/
  [2]: http://wooga.github.io/Paket.Unity3D/
